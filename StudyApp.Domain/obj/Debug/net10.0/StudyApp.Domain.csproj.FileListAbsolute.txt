@@ -1,0 +1,11 @@
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Domain\bin\Debug\net10.0\StudyApp.Domain.deps.json
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Domain\bin\Debug\net10.0\StudyApp.Domain.dll
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Domain\bin\Debug\net10.0\StudyApp.Domain.pdb
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Domain\obj\Debug\net10.0\StudyApp.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Domain\obj\Debug\net10.0\StudyApp.Domain.AssemblyInfoInputs.cache
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Domain\obj\Debug\net10.0\StudyApp.Domain.AssemblyInfo.cs
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Domain\obj\Debug\net10.0\StudyApp.Domain.csproj.CoreCompileInputs.cache
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Domain\obj\Debug\net10.0\StudyApp.Domain.dll
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Domain\obj\Debug\net10.0\refint\StudyApp.Domain.dll
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Domain\obj\Debug\net10.0\StudyApp.Domain.pdb
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Domain\obj\Debug\net10.0\ref\StudyApp.Domain.dll
