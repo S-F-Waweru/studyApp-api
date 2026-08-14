@@ -129,3 +129,4 @@ C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Api\bin\Debug\net10.0\ru\Micros
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Api\bin\Debug\net10.0\tr\Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Api\bin\Debug\net10.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Api\bin\Debug\net10.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Api\obj\Debug\net10.0\StudyApp.Api.sourcelink.json

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using StudyApp.Application.Folders;
 using  StudyApp.Application.Repositories;
 using StudyApp.Application.Workspaces;
 using StudyApp.Infrastructure.Persistence;
@@ -13,6 +14,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IWorkrepository, WorkspaceRepository>();
 builder.Services.AddScoped<IWorkSpaceService, WorkspaceService>();
+
+builder.Services.AddScoped<IFolderRepository, FolderRepository>();
+builder.Services.AddScoped<IFolderService, FolderService>();
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

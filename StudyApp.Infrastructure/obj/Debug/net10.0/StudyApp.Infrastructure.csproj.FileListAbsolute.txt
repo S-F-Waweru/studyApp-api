@@ -17,3 +17,4 @@ C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Infrastructure\obj\Debug\net10.
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Infrastructure\obj\Debug\net10.0\ref\StudyApp.Infrastructure.dll
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Infrastructure\bin\Debug\net10.0\StudyApp.Infrastructure.runtimeconfig.json
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Infrastructure\obj\Debug\net10.0\StudyApp.Infrastructure.genruntimeconfig.cache
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Infrastructure\obj\Debug\net10.0\StudyApp.Infrastructure.sourcelink.json

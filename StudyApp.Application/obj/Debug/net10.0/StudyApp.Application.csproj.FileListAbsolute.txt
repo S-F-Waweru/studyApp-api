@@ -13,3 +13,4 @@ C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Application\obj\Debug\net10.0\S
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Application\obj\Debug\net10.0\refint\StudyApp.Application.dll
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Application\obj\Debug\net10.0\StudyApp.Application.pdb
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Application\obj\Debug\net10.0\ref\StudyApp.Application.dll
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Application\obj\Debug\net10.0\StudyApp.Application.sourcelink.json

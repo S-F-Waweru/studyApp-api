@@ -100,3 +100,4 @@ C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Tests\obj\Debug\net10.0\refint\
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Tests\obj\Debug\net10.0\StudyApp.Tests.pdb
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Tests\obj\Debug\net10.0\StudyApp.Tests.genruntimeconfig.cache
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Tests\obj\Debug\net10.0\ref\StudyApp.Tests.dll
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Tests\obj\Debug\net10.0\StudyApp.Tests.sourcelink.json
