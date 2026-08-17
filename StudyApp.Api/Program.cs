@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using StudyApp.Application.Events;
 using StudyApp.Application.Folders;
+using StudyApp.Application.Notes;
 using  StudyApp.Application.Repositories;
 using StudyApp.Application.Workspaces;
+using StudyApp.Infrastructure.Events;
 using StudyApp.Infrastructure.Persistence;
 using StudyApp.Infrastructure.Repositories;
 
@@ -17,6 +20,10 @@ builder.Services.AddScoped<IWorkSpaceService, WorkspaceService>();
 
 builder.Services.AddScoped<IFolderRepository, FolderRepository>();
 builder.Services.AddScoped<IFolderService, FolderService>();
+
+builder.Services.AddScoped<INoteRepository, NoteRepository>();
+builder.Services.AddScoped<INoteService, NoteService>();
+builder.Services.AddScoped<IEventPublisher, LoggingEventPublisher>();
 
 
 builder.Services.AddControllers();
