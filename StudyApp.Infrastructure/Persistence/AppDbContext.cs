@@ -11,6 +11,17 @@ public class AppDbContext : DbContext
     public DbSet<Folder> Folders => Set<Folder>();
     public DbSet<Note> Notes => Set<Note>();
 
+    public DbSet<Scribble> Scribbles => Set<Scribble>();
+    public DbSet<NoteScribbleLink> NoteScribbleLinks => Set<NoteScribbleLink>();
+
+    public DbSet<Document> Documents => Set<Document>();
+    public DbSet<VectorChunk> VectorChunks => Set<VectorChunk>();
+
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        // enables the Vector type mapping — required alongside the UseNpgsql(...).UseVector() call in Program.cs
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -37,6 +48,39 @@ public class AppDbContext : DbContext
             entity.Property(n => n.Title).IsRequired().HasMaxLength(300);
             entity.Property(n => n.ScopeType).HasConversion<string>(); // stored as text, not int — readable in the DB, safe to reorder enum values later
             entity.HasIndex(n => new { n.ScopeId, n.ScopeType }); // every scoped query filters on this pair
+        });
+
+        modelBuilder.Entity<Scribble>(entity =>
+        {
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.Title).IsRequired().HasMaxLength(300);
+            entity.Property(s => s.ScopeType).HasConversion<string>();
+            entity.Property(s => s.CanvasData).HasColumnType("jsonb");
+            entity.HasIndex(s => new { s.ScopeId, s.ScopeType });
+        });
+
+        modelBuilder.Entity<NoteScribbleLink>(entity =>
+        {
+            entity.HasKey(l => new { l.NoteId, l.ScribbleId }); // composite key — pure join table, no surrogate id needed
+        });
+
+
+        modelBuilder.Entity<Document>(entity =>
+        {
+            entity.HasKey(d => d.Id);
+            entity.Property(d => d.Filename).IsRequired().HasMaxLength(300);
+            entity.Property(d => d.ScopeType).HasConversion<string>();
+            entity.HasIndex(d => new { d.ScopeId, d.ScopeType });
+        });
+
+        modelBuilder.Entity<VectorChunk>(entity =>
+        {
+            entity.HasKey(v => v.Id);
+            entity.Property(v => v.SourceType).HasMaxLength(20);
+            entity.Property(v => v.ScopeType).HasMaxLength(20);
+            entity.Property(v => v.Embedding).HasColumnType("vector(768)"); // nomic-embed-text dimension
+            entity.HasIndex(v => v.SourceId);
+            entity.HasIndex(v => new { v.ScopeId, v.ScopeType });
         });
     }
 

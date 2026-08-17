@@ -101,3 +101,7 @@ C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Tests\obj\Debug\net10.0\StudyAp
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Tests\obj\Debug\net10.0\StudyApp.Tests.genruntimeconfig.cache
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Tests\obj\Debug\net10.0\ref\StudyApp.Tests.dll
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Tests\obj\Debug\net10.0\StudyApp.Tests.sourcelink.json
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Tests\bin\Debug\net10.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Tests\bin\Debug\net10.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Tests\bin\Debug\net10.0\Npgsql.dll
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Tests\bin\Debug\net10.0\Pgvector.dll

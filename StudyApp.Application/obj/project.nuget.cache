@@ -1,8 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "GQ0a8RI35T4=",
+  "dgSpecHash": "mMSAI+V5+dc=",
   "success": true,
   "projectFilePath": "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Application\\StudyApp.Application.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\Samuel\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\Samuel\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.0\\microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\Samuel\\.nuget\\packages\\npgsql\\8.0.5\\npgsql.8.0.5.nupkg.sha512",
+    "C:\\Users\\Samuel\\.nuget\\packages\\pgvector\\0.3.2\\pgvector.0.3.2.nupkg.sha512"
+  ],
   "logs": []
 }

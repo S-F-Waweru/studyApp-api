@@ -10,3 +10,4 @@ C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Domain\obj\Debug\net10.0\refint
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Domain\obj\Debug\net10.0\StudyApp.Domain.pdb
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Domain\obj\Debug\net10.0\ref\StudyApp.Domain.dll
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Domain\obj\Debug\net10.0\StudyApp.Domain.sourcelink.json
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Domain\obj\Debug\net10.0\StudyApp.Domain.csproj.AssemblyReference.cache

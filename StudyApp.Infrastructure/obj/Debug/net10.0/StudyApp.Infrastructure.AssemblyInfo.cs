@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("StudyApp.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8280de4a23c6a70d456fb745c5c64c8c73ffb3c4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3ca5ee09950f171a84b5b674f4fc6dcf9f417670")]
 [assembly: System.Reflection.AssemblyProductAttribute("StudyApp.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("StudyApp.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

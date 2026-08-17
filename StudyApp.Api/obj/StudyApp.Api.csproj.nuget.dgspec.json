@@ -55,7 +55,7 @@
           "dependencies": {
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
-              "version": "[10.0.10, )"
+              "version": "[10.0.11, )"
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
@@ -71,9 +71,13 @@
               "target": "Package",
               "version": "[10.0.3, )"
             },
-            "Swashbuckle.AspNetCore": {
+            "Pgvector.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[10.2.3, )"
+              "version": "[0.3.0, )"
+            },
+            "Scalar.AspNetCore": {
+              "target": "Package",
+              "version": "[2.16.20, )"
             }
           },
           "imports": [
@@ -893,6 +897,12 @@
         "net10.0": {
           "framework": "net10.0",
           "targetAlias": "net10.0",
+          "dependencies": {
+            "Pgvector": {
+              "target": "Package",
+              "version": "[0.3.2, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -1243,9 +1253,21 @@
               "target": "Package",
               "version": "[10.0.10, )"
             },
+            "Microsoft.Extensions.Hosting.Abstractions": {
+              "target": "Package",
+              "version": "[10.0.11, )"
+            },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
               "version": "[10.0.3, )"
+            },
+            "Pgvector": {
+              "target": "Package",
+              "version": "[0.3.2, )"
+            },
+            "Pgvector.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[0.3.0, )"
             }
           },
           "imports": [
