@@ -6,6 +6,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn> <!-- don't warn on every undocumented public member -->
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.10" />
@@ -22,5 +27,7 @@
     <ProjectReference Include="..\StudyApp.Application\StudyApp.Application.csproj" />
     <ProjectReference Include="..\StudyApp.Infrastructure\StudyApp.Infrastructure.csproj" />
   </ItemGroup>
+
+
 
 </Project>

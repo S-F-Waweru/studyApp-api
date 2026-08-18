@@ -27,6 +27,11 @@ public class NoteService : INoteService
             Title = request.Title,
             Content = request.Content
         };
+        Console.WriteLine($"----------------------------------------->SERVICE<----------------------------------------");
+        Console.WriteLine(note);
+        Console.WriteLine($"-----------------------------------------><----------------------------------------");
+
+
         await _repository.AddAsync(note);
         await PublishAsync(note, DomainEventType.NoteCreated);
         return ToDto(note);

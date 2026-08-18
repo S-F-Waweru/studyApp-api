@@ -12,15 +12,22 @@ public class OllamaEmbeddingService : IEmbeddingService
 
     public async Task<float[]> EmbedAsync(string text)
     {
-        var response = await _client.PostAsJsonAsync("/api/embeddings", new
-        {
-            model = "nomic-embed-text",
-            prompt = text
-        });
-        response.EnsureSuccessStatusCode();
 
-        var result = await response.Content.ReadFromJsonAsync<OllamaEmbeddingResponse>();
-        return result?.Embedding ?? throw new InvalidOperationException("Empty embedding response from Ollama");
+        try{
+            var response = await _client.PostAsJsonAsync("/api/embeddings", new
+            {
+                model = "nomic-embed-text",
+                prompt = text
+            });
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadFromJsonAsync<OllamaEmbeddingResponse>();
+            return result?.Embedding ?? throw new InvalidOperationException("Empty embedding response from Ollama");
+        }catch (HttpRequestException ex)
+            {
+                throw new InvalidOperationException("Could not reach Ollama for embeddings — confirm 'ollama serve' is running and 'nomic-embed-text' is pulled.", ex);
+            }
+
     }
 
     private record OllamaEmbeddingResponse([property: JsonPropertyName("embedding")] float[] Embedding);

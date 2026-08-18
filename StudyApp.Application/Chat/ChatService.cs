@@ -86,7 +86,15 @@ public class ChatService : IChatService
              """;
 
         // 7. call the LLM
-        var reply = await _llm.GenerateReplyAsync(systemPrompt, history, request.Content);
+        string reply;
+        try
+        {
+            reply = await _llm.GenerateReplyAsync(systemPrompt, history, request.Content);
+        }
+        catch (InvalidOperationException ex)
+        {
+            reply = $"(Assistant unavailable: {ex.Message})";
+        }
 
         // 8. store the assistant's reply with source traceability
         var assistantMessage = new ChatMessage

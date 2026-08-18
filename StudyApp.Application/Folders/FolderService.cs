@@ -27,7 +27,7 @@ public class FolderService : IFolderService
 
     public async Task<bool> DeleteAsync(Guid id)
     {
-        var folder = GetByIdAsync(id);
+        var folder = await GetByIdAsync(id);
         if (folder is null) return false;
 
         await _repository.DeleteAsync(id);

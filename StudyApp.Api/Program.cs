@@ -19,6 +19,8 @@ using StudyApp.Infrastructure.Repositories;
 using StudyApp.Infrastructure.Storage;
 using StudyApp.Infrastructure.Chat;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc;
+using StudyApp.Application.Common;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -71,6 +73,23 @@ builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddHttpClient<IChatLlmService, OllamaChatService>(client =>
     client.BaseAddress = new Uri("http://localhost:11434"));
 
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Where(e => e.Value?.Errors.Count > 0)
+            .ToDictionary(
+                e => e.Key,
+                e => e.Value!.Errors.Select(x => x.ErrorMessage).ToArray()
+            );
+
+        var response = ApiResponse<object>.Fail(400, "Validation failed", errors);
+        return new BadRequestObjectResult(response);
+    };
+});
+
+
 
 // builder.Services.AddControllers();
 builder.Services.AddControllers()
@@ -86,6 +105,34 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler(errorApp =>
+    {
+        errorApp.Run(async context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            context.Response.ContentType = "application/problem+json";
+            await context.Response.WriteAsJsonAsync(new
+            {
+                title = "An unexpected error occurred.",
+                status = 500
+            });
+        });
+    });
+}
+
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+        var response = ApiResponse<object>.Fail(500, "An unexpected error occurred.");
+        await context.Response.WriteAsJsonAsync(response);
+    });
+});
 
 app.MapControllers();
 app.Run();
