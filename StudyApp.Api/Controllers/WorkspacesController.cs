@@ -19,13 +19,12 @@ public class WorkspacesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateWorspaceRequest request) {
         var result = await _service.CreateAsync(request);
-
-        return CreatedAtAction(nameof(GetById), new { id = request }, result);
+            return CreatedAtRoute("GetWorkspaceById", new { id = result.Id }, result);
 
 
     }
 
-    [HttpGet("{id:Guid}")]
+    [HttpGet("{id:Guid}", Name = "GetWorkspaceById")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _service.GetByIsAsync(id);

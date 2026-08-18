@@ -19,7 +19,7 @@ public class ScribblesController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
 
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:guid}", Name = "GetScribbleById")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _service.GetByIdAsync(id);
@@ -40,6 +40,7 @@ public class ScribblesController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
+        Console.WriteLine($"==> Delete {id}");
         var success = await _service.DeleteAsync(id);
         return success ? NoContent() : NotFound();
     }

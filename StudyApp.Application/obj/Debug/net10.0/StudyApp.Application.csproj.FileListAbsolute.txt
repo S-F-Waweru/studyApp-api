@@ -8,9 +8,9 @@ C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Application\obj\Debug\net10.0\S
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Application\obj\Debug\net10.0\StudyApp.Application.AssemblyInfoInputs.cache
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Application\obj\Debug\net10.0\StudyApp.Application.AssemblyInfo.cs
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Application\obj\Debug\net10.0\StudyApp.Application.csproj.CoreCompileInputs.cache
+C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Application\obj\Debug\net10.0\StudyApp.Application.sourcelink.json
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Application\obj\Debug\net10.0\StudyApp.E5975294.Up2Date
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Application\obj\Debug\net10.0\StudyApp.Application.dll
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Application\obj\Debug\net10.0\refint\StudyApp.Application.dll
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Application\obj\Debug\net10.0\StudyApp.Application.pdb
 C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Application\obj\Debug\net10.0\ref\StudyApp.Application.dll
-C:\Code\Personal\.NET\projects\StudyApp\StudyApp.Application\obj\Debug\net10.0\StudyApp.Application.sourcelink.json

@@ -24,10 +24,13 @@ public class WorkspaceRepository : IWorkrepository
 
     public async Task DeleteAsync(Guid id)
     {
-         _context.Remove(id);
-        await _context.SaveChangesAsync();
+        var workspace = await _context.Workspaces.FindAsync(id);
+        if (workspace is not null)
+        {
+            _context.Workspaces.Remove(workspace);
+            await _context.SaveChangesAsync();
+        }
     }
-
     public async Task<IEnumerable<Workspace>> GetAllAsync() => await _context.Workspaces.OrderByDescending(w => w.CreatedAt).ToListAsync();
 
     public async Task<Workspace?> GetByIdAsync(Guid id) =>

@@ -1,4 +1,5 @@
 using System.Threading.Channels;
+using Scalar.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using StudyApp.Application.Documents;
 using StudyApp.Application.Embeddings;
@@ -9,11 +10,15 @@ using  StudyApp.Application.Repositories;
 using StudyApp.Application.Scribbles;
 using StudyApp.Application.Storage;
 using StudyApp.Application.Workspaces;
+using StudyApp.Application.Scoping;
+using StudyApp.Application.Chat;
 using StudyApp.Infrastructure.Embeddings;
 using StudyApp.Infrastructure.Events;
 using StudyApp.Infrastructure.Persistence;
 using StudyApp.Infrastructure.Repositories;
 using StudyApp.Infrastructure.Storage;
+using StudyApp.Infrastructure.Chat;
+using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +26,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+
+
 
 builder.Services.AddScoped<IWorkrepository, WorkspaceRepository>();
 builder.Services.AddScoped<IWorkSpaceService, WorkspaceService>();
@@ -30,7 +37,6 @@ builder.Services.AddScoped<IFolderService, FolderService>();
 
 builder.Services.AddScoped<INoteRepository, NoteRepository>();
 builder.Services.AddScoped<INoteService, NoteService>();
-builder.Services.AddScoped<IEventPublisher, LoggingEventPublisher>();
 
 builder.Services.AddScoped<IScribbleRepository, ScribbleRepository>();
 builder.Services.AddScoped<INoteScribbleLinkRepository, NoteScribbleLinkRepository>();
@@ -58,8 +64,18 @@ builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<IVectorChunkRepository, VectorChunkRepository>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
 
+builder.Services.AddScoped<IScopeResolver, ScopeResolver>();
+builder.Services.AddScoped<IChatSessionRepository, ChatSessionRepository>();
+builder.Services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
+builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddHttpClient<IChatLlmService, OllamaChatService>(client =>
+    client.BaseAddress = new Uri("http://localhost:11434"));
 
-builder.Services.AddControllers();
+
+// builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 

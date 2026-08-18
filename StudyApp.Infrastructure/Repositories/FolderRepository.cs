@@ -88,4 +88,33 @@ public class FolderRepository : IFolderRepository
     }
 
 
+    public async Task<IEnumerable<Guid>> GetAllFolderIdsInWorkspaceAsync(Guid workspaceId)
+    {
+        const string sql = @"
+            WITH RECURSIVE descendants AS (
+                SELECT ""Id"" FROM ""Folders"" WHERE ""WorkspaceId"" = @workspaceId AND ""ParentFolderId"" IS NULL
+                UNION ALL
+                SELECT f.""Id"" FROM ""Folders"" f
+                INNER JOIN descendants d ON f.""ParentFolderId"" = d.""Id""
+            )
+            SELECT ""Id"" FROM descendants;";
+
+        var connection = _context.Database.GetDbConnection();
+        await connection.OpenAsync();
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = sql;
+        var param = command.CreateParameter();
+        param.ParameterName = "@workspaceId";
+        param.Value = workspaceId;
+        command.Parameters.Add(param);
+
+        var ids = new List<Guid>();
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+            ids.Add(reader.GetGuid(0));
+
+        return ids;
+    }
+
 }

@@ -17,6 +17,10 @@ public class AppDbContext : DbContext
     public DbSet<Document> Documents => Set<Document>();
     public DbSet<VectorChunk> VectorChunks => Set<VectorChunk>();
 
+    public DbSet<ChatSession> ChatSessions => Set<ChatSession>();
+    public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
+
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -81,6 +85,23 @@ public class AppDbContext : DbContext
             entity.Property(v => v.Embedding).HasColumnType("vector(768)"); // nomic-embed-text dimension
             entity.HasIndex(v => v.SourceId);
             entity.HasIndex(v => new { v.ScopeId, v.ScopeType });
+        });
+
+
+        // inside OnModelCreating:
+        modelBuilder.Entity<ChatSession>(entity =>
+        {
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.ScopeType).HasConversion<string>();
+            entity.HasIndex(s => new { s.ScopeId, s.ScopeType });
+        });
+
+        modelBuilder.Entity<ChatMessage>(entity =>
+        {
+            entity.HasKey(m => m.Id);
+            entity.Property(m => m.Role).HasConversion<string>();
+            entity.Property(m => m.RetrievedChunkIds).HasColumnType("uuid[]"); // Postgres array — matches schema §13
+            entity.HasIndex(m => m.ChatSessionId);
         });
     }
 

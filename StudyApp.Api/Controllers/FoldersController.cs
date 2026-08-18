@@ -18,15 +18,20 @@ public class FoldersController : ControllerBase
     public async Task<IActionResult> Create(CreateFolderRequest request)
     {
         var result = await _service.CreateAsync(request);
-        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
-    }
 
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id)
-    {
-        var result = await _service.GetByIdAsync(id);
-        return result is null ? NotFound() : Ok(result);
-    }
+        return CreatedAtAction(
+                nameof(GetById),
+                new { id = result.Id },
+                result);
+        }
+
+        [HttpGet("{id:guid}", Name = "GetFolderById")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var result = await _service.GetByIdAsync(id);
+
+            return result is null ? NotFound() : Ok(result);
+        }
 
     [HttpGet]
     public async Task<IActionResult> GetChildren([FromQuery] Guid workspaceId, [FromQuery] Guid? parentFolderId) =>
