@@ -32,4 +32,15 @@ public class DocumentsController : ApiControllerBase
         return success ? Success<object?>(null, 204) : Fail(404, "Document not found");
 
     }
+
+    [HttpGet("{id:guid}/content")]
+    public async Task<IActionResult> GetContent(Guid id)
+    {
+        var result = await _service.GetContentAsync(id);
+        if (result is null) return Fail(404, "Document not found");
+
+        var (stream, contentType, filename) = result.Value;
+        return File(stream, contentType, filename); // bypasses the ApiResponse envelope on purpose — this is a raw file stream, not JSON
+    }
+
 }

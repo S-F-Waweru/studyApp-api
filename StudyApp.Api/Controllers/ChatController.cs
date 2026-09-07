@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using StudyApp.Application.Chat;
+using StudyApp.Domain.Enums;
 
 namespace StudyApp.Api.Controllers;
 
@@ -22,4 +23,10 @@ public class ChatController : ApiControllerBase
     [HttpPost("sessions/{id:guid}/messages")]
     public async Task<IActionResult> SendMessage(Guid id, SendMessageRequest request) =>
         Success(await _service.SendMessageAsync(id, request));
+
+
+    [HttpGet("sessions")]
+    public async Task<IActionResult> GetSessions([FromQuery] Guid scopeId, [FromQuery] ScopeType scopeType) =>
+        Success(await _service.GetSessionsByScopeAsync(scopeId, scopeType));
+
 }
