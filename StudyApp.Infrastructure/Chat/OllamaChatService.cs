@@ -7,7 +7,9 @@ namespace StudyApp.Infrastructure.Chat;
 public class OllamaChatService : IChatLlmService
 {
     private readonly HttpClient _client;
-    private const string Model = "qwen3:1.7b"; // swap freely — chat LLM is not sticky like the embedding model (architecture §7)
+    
+    //todo :  Make this a configuration variable for eser access
+    private const string Model = "smollm:1.7b-instruct-v0.2-q3_K_L"; // swap freely — chat LLM is not sticky like the embedding model (architecture §7)
 
     public OllamaChatService(HttpClient client) => _client = client; // base address: http://localhost:11434
 

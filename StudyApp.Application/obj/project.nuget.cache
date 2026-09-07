@@ -1,13 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "mMSAI+V5+dc=",
+  "dgSpecHash": "M4B2cEEZNBs=",
   "success": true,
-  "projectFilePath": "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Application\\StudyApp.Application.csproj",
+  "projectFilePath": "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Application/StudyApp.Application.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Samuel\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
-    "C:\\Users\\Samuel\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.0\\microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512",
-    "C:\\Users\\Samuel\\.nuget\\packages\\npgsql\\8.0.5\\npgsql.8.0.5.nupkg.sha512",
-    "C:\\Users\\Samuel\\.nuget\\packages\\pgvector\\0.3.2\\pgvector.0.3.2.nupkg.sha512"
+    "/home/samuel/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.0/microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "/home/samuel/.nuget/packages/microsoft.extensions.logging.abstractions/8.0.0/microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512",
+    "/home/samuel/.nuget/packages/npgsql/8.0.5/npgsql.8.0.5.nupkg.sha512",
+    "/home/samuel/.nuget/packages/pgvector/0.3.2/pgvector.0.3.2.nupkg.sha512",
+    "/home/samuel/.nuget/packages/microsoft.aspnetcore.app.ref/10.0.11/microsoft.aspnetcore.app.ref.10.0.11.nupkg.sha512"
   ],
   "logs": []
 }

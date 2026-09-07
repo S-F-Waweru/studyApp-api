@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 3,
   "targets": {
     "net10.0": {
       "Microsoft.Extensions.DependencyInjection.Abstractions/8.0.0": {
@@ -220,19 +220,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Samuel\\.nuget\\packages\\": {}
+    "/home/samuel/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Domain\\StudyApp.Domain.csproj",
+      "projectUniqueName": "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Domain/StudyApp.Domain.csproj",
       "projectName": "StudyApp.Domain",
-      "projectPath": "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Domain\\StudyApp.Domain.csproj",
-      "packagesPath": "C:\\Users\\Samuel\\.nuget\\packages\\",
-      "outputPath": "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Domain\\obj\\",
+      "projectPath": "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Domain/StudyApp.Domain.csproj",
+      "packagesPath": "/home/samuel/.nuget/packages/",
+      "outputPath": "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Domain/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Samuel\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/home/samuel/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
@@ -257,7 +257,7 @@
         "auditLevel": "low",
         "auditMode": "all"
       },
-      "SdkAnalysisLevel": "10.0.300"
+      "SdkAnalysisLevel": "10.0.100"
     },
     "frameworks": {
       "net10.0": {
@@ -280,12 +280,18 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[10.0.11, 10.0.11]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.111/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",

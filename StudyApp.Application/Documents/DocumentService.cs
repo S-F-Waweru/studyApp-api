@@ -73,5 +73,24 @@ public class DocumentService : IDocumentService
         return true;
     }
 
+    public async Task<(Stream, string, string)?> GetContentAsync(Guid id)
+    {
+        var document = await _repository.GetByIdAsync(id);
+        if (document is null) return null;
+
+        var stream = await _storage.OpenReadAsync(document.StoragePath);
+        var contentType = document.Filename.ToLowerInvariant() switch
+        {
+            var f when f.EndsWith(".pdf") => "application/pdf",
+            var f when f.EndsWith(".png") => "image/png",
+            var f when f.EndsWith(".jpg") || f.EndsWith(".jpeg") => "image/jpeg",
+            var f when f.EndsWith(".txt") || f.EndsWith(".md") => "text/plain",
+            var f when f.EndsWith(".docx") => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            var f when f.EndsWith(".xlsx") => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            _ => "application/octet-stream"
+        };
+        return (stream, contentType, document.Filename);
+    }
+
     private static DocumentDto ToDto(Document d) => new(d.Id, d.ScopeId, d.ScopeType, d.Filename, d.CreatedAt);
 }

@@ -16,6 +16,7 @@ public class OllamaEmbeddingService : IEmbeddingService
         try{
             var response = await _client.PostAsJsonAsync("/api/embeddings", new
             {
+                //todo :  Make this a configuration variable for eser access
                 model = "nomic-embed-text",
                 prompt = text
             });

@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Tests\\StudyApp.Tests.csproj": {}
+    "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Tests/StudyApp.Tests.csproj": {}
   },
   "projects": {
-    "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Application\\StudyApp.Application.csproj": {
+    "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Application/StudyApp.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Application\\StudyApp.Application.csproj",
+        "projectUniqueName": "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Application/StudyApp.Application.csproj",
         "projectName": "StudyApp.Application",
-        "projectPath": "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Application\\StudyApp.Application.csproj",
-        "packagesPath": "C:\\Users\\Samuel\\.nuget\\packages\\",
-        "outputPath": "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Application\\obj\\",
+        "projectPath": "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Application/StudyApp.Application.csproj",
+        "packagesPath": "/home/samuel/.nuget/packages/",
+        "outputPath": "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Application/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Samuel\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/home/samuel/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
@@ -24,11 +24,10 @@
         },
         "frameworks": {
           "net10.0": {
-            "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Domain\\StudyApp.Domain.csproj": {
-                "projectPath": "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Domain\\StudyApp.Domain.csproj"
+              "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Domain/StudyApp.Domain.csproj": {
+                "projectPath": "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Domain/StudyApp.Domain.csproj"
               }
             }
           }
@@ -43,11 +42,10 @@
           "auditLevel": "low",
           "auditMode": "all"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
         "net10.0": {
-          "framework": "net10.0",
           "targetAlias": "net10.0",
           "imports": [
             "net461",
@@ -60,12 +58,18 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[10.0.11, 10.0.11]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.111/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",
@@ -343,17 +347,17 @@
         }
       }
     },
-    "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Domain\\StudyApp.Domain.csproj": {
+    "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Domain/StudyApp.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Domain\\StudyApp.Domain.csproj",
+        "projectUniqueName": "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Domain/StudyApp.Domain.csproj",
         "projectName": "StudyApp.Domain",
-        "projectPath": "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Domain\\StudyApp.Domain.csproj",
-        "packagesPath": "C:\\Users\\Samuel\\.nuget\\packages\\",
-        "outputPath": "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Domain\\obj\\",
+        "projectPath": "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Domain/StudyApp.Domain.csproj",
+        "packagesPath": "/home/samuel/.nuget/packages/",
+        "outputPath": "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Domain/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Samuel\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/home/samuel/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
@@ -363,7 +367,6 @@
         },
         "frameworks": {
           "net10.0": {
-            "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {}
           }
@@ -378,11 +381,10 @@
           "auditLevel": "low",
           "auditMode": "all"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
         "net10.0": {
-          "framework": "net10.0",
           "targetAlias": "net10.0",
           "dependencies": {
             "Pgvector": {
@@ -401,12 +403,18 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[10.0.11, 10.0.11]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.111/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",
@@ -684,17 +692,17 @@
         }
       }
     },
-    "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Tests\\StudyApp.Tests.csproj": {
+    "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Tests/StudyApp.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Tests\\StudyApp.Tests.csproj",
+        "projectUniqueName": "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Tests/StudyApp.Tests.csproj",
         "projectName": "StudyApp.Tests",
-        "projectPath": "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Tests\\StudyApp.Tests.csproj",
-        "packagesPath": "C:\\Users\\Samuel\\.nuget\\packages\\",
-        "outputPath": "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Tests\\obj\\",
+        "projectPath": "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Tests/StudyApp.Tests.csproj",
+        "packagesPath": "/home/samuel/.nuget/packages/",
+        "outputPath": "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Tests/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Samuel\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/home/samuel/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
@@ -704,11 +712,10 @@
         },
         "frameworks": {
           "net10.0": {
-            "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Application\\StudyApp.Application.csproj": {
-                "projectPath": "C:\\Code\\Personal\\.NET\\projects\\StudyApp\\StudyApp.Application\\StudyApp.Application.csproj"
+              "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Application/StudyApp.Application.csproj": {
+                "projectPath": "/home/samuel/Code/Personal/StudyApp/studyApp-api/StudyApp.Application/StudyApp.Application.csproj"
               }
             }
           }
@@ -723,11 +730,10 @@
           "auditLevel": "low",
           "auditMode": "all"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
         "net10.0": {
-          "framework": "net10.0",
           "targetAlias": "net10.0",
           "dependencies": {
             "Microsoft.NET.Test.Sdk": {
@@ -758,12 +764,18 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[10.0.11, 10.0.11]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.111/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",
