@@ -109,6 +109,12 @@ public class ChatService : IChatService
         return ToDto(assistantMessage);
     }
 
+    public async Task<List<ChatSessionDto>> GetSessionsByScopeAsync(Guid scopeId, ScopeType scopeType)
+    {
+        var sessions = await _sessions.GetByScopeAsync(scopeId, scopeType);
+        return sessions.Select(s => new ChatSessionDto(s.Id, s.ScopeId, s.ScopeType, s.Title, s.CreatedAt)).ToList();
+    }
+
     private static ChatMessageDto ToDto(ChatMessage m) =>
         new(m.Id, m.Role.ToString().ToLowerInvariant(), m.Content, m.RetrievedChunkIds, m.CreatedAt);
 }
