@@ -16,7 +16,12 @@ public class WorkspaceService : IWorkSpaceService
 
     public async Task<WorkSpaceDto> CreateAsync(CreateWorspaceRequest request)
     {
-        var workspace = new Workspace { Name = request.Name };
+        var workspace = new Workspace
+        {
+            Name = request.Name,
+            Description = NullIfBlank(request.Description),
+            CustomInstructions = NullIfBlank(request.CustomInstructions)
+        };
         await _repository.CreateAsync(workspace);
         return ToDto(workspace);
     }
@@ -50,6 +55,8 @@ public class WorkspaceService : IWorkSpaceService
         if (workspace is null) return false;
 
         workspace.Name = request.Name;
+        workspace.Description = request.Description is null ? workspace.Description : NullIfBlank(request.Description);
+        workspace.CustomInstructions = request.CustomInstructions is null ? workspace.CustomInstructions : NullIfBlank(request.CustomInstructions);
 
         await _repository.UpdateAsync(workspace);
         return true;
@@ -57,7 +64,9 @@ public class WorkspaceService : IWorkSpaceService
     }
 
 
-    private static WorkSpaceDto ToDto(Workspace w) => new(w.Id, w.Name, w.CreatedAt);
+    private static string? NullIfBlank(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    private static WorkSpaceDto ToDto(Workspace w) => new(w.Id, w.Name, w.Description, w.CustomInstructions, w.CreatedAt);
 
 
 }

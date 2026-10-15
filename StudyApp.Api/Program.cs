@@ -12,12 +12,13 @@ using StudyApp.Application.Storage;
 using StudyApp.Application.Workspaces;
 using StudyApp.Application.Scoping;
 using StudyApp.Application.Chat;
+using StudyApp.Application.Ai;
 using StudyApp.Infrastructure.Embeddings;
 using StudyApp.Infrastructure.Events;
 using StudyApp.Infrastructure.Persistence;
 using StudyApp.Infrastructure.Repositories;
 using StudyApp.Infrastructure.Storage;
-using StudyApp.Infrastructure.Chat;
+using StudyApp.Infrastructure.Ai;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
@@ -91,10 +92,26 @@ builder.Services.AddHostedService<EventProcessingWorker>();
 builder.Services.AddSingleton<IFileStorage>(_ =>
     new LocalFileStorage(Path.Combine(builder.Environment.ContentRootPath, "files")));
 
-// extraction + embedding
+// extraction
 builder.Services.AddScoped<ITextExtractor, TextExtractor>();
-builder.Services.AddHttpClient<IEmbeddingService, OllamaEmbeddingService>(client =>
-    client.BaseAddress = new Uri("http://localhost:11434"));
+
+// AI settings — defaults from appsettings "Ai"; once saved via /api/ai/settings the DB row wins
+builder.Services.AddSingleton(builder.Configuration.GetSection("Ai").Get<AiDefaults>() ?? new AiDefaults());
+builder.Services.AddScoped<IAiSettingsRepository, AiSettingsRepository>();
+builder.Services.AddScoped<IAiSettingsService, AiSettingsService>();
+builder.Services.AddScoped<IAiConnectionTester, AiConnectionTester>();
+
+// named clients — base address now comes from settings per call, so it can't be fixed at startup
+builder.Services.AddHttpClient("ai-chat", client => client.Timeout = TimeSpan.FromMinutes(5));
+builder.Services.AddHttpClient("ai-embeddings", client => client.Timeout = TimeSpan.FromMinutes(2));
+
+builder.Services.AddSingleton<IChatProvider, OllamaChatProvider>();
+builder.Services.AddSingleton<IChatProvider, OpenAiCompatibleChatProvider>();
+builder.Services.AddSingleton<IEmbeddingProvider, OllamaEmbeddingProvider>();
+builder.Services.AddSingleton<IEmbeddingProvider, OpenAiCompatibleEmbeddingProvider>();
+
+// the public seams keep their interfaces — ChatService / EventProcessingWorker etc. don't change
+builder.Services.AddScoped<IEmbeddingService, ConfiguredEmbeddingService>();
 
 // document module
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
@@ -105,8 +122,8 @@ builder.Services.AddScoped<IScopeResolver, ScopeResolver>();
 builder.Services.AddScoped<IChatSessionRepository, ChatSessionRepository>();
 builder.Services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
 builder.Services.AddScoped<IChatService, ChatService>();
-builder.Services.AddHttpClient<IChatLlmService, OllamaChatService>(client =>
-    client.BaseAddress = new Uri("http://localhost:11434"));
+builder.Services.AddScoped<ISystemPromptBuilder, SystemPromptBuilder>();
+builder.Services.AddScoped<IChatLlmService, ConfiguredChatLlmService>();
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {

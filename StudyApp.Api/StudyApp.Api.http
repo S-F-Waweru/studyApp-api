@@ -1,6 +1,38 @@
 @StudyApp.Api_HostAddress = http://localhost:5031
 
-GET {{StudyApp.Api_HostAddress}}/weatherforecast/
+### Get current AI settings (API keys are masked, never returned raw)
+GET {{StudyApp.Api_HostAddress}}/api/ai/settings
 Accept: application/json
 
-###
+### Update AI settings — BYOK + guardrails example
+PUT {{StudyApp.Api_HostAddress}}/api/ai/settings
+Content-Type: application/json
+
+{
+  "chatProvider": "OpenAiCompatible",
+  "chatBaseUrl": "https://api.openai.com",
+  "chatModel": "gpt-4o-mini",
+  "chatApiKey": "sk-your-key-here",
+  "guardrails": "You are a study assistant. Only answer from the provided context. If the answer is not in the context, say so. Never help with cheating.",
+  "systemPromptTemplate": "{guardrails}\n\nWorkspace context:\n{workspace_context}\n\nRetrieved context:\n{retrieved_context}",
+  "embeddingProvider": "Ollama",
+  "embeddingBaseUrl": "http://localhost:11434",
+  "embeddingModel": "nomic-embed-text",
+  "embeddingApiKey": null
+}
+
+### Set the workspace first-context (pinned into every chat in this workspace)
+PUT {{StudyApp.Api_HostAddress}}/api/workspaces/00000000-0000-0000-0000-000000000000
+Content-Type: application/json
+
+{
+  "name": "Kubernetes",
+  "description": "CKA exam prep — core Kubernetes concepts",
+  "customInstructions": "Always explain with kubectl examples. Use CKA exam phrasing."
+}
+
+### Test the saved (or supplied) configuration — lists models and checks embedding dimensions
+POST {{StudyApp.Api_HostAddress}}/api/ai/test
+Content-Type: application/json
+
+{}

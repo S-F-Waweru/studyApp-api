@@ -17,6 +17,7 @@ public class ChatService : IChatService
     private readonly IEmbeddingService _embedder;
     private readonly IScopeResolver _scopeResolver;
     private readonly IChatLlmService _llm;
+    private readonly ISystemPromptBuilder _promptBuilder;
 
     public ChatService(
         IChatSessionRepository sessions,
@@ -24,7 +25,8 @@ public class ChatService : IChatService
         IVectorChunkRepository vectorChunks,
         IEmbeddingService embedder,
         IScopeResolver scopeResolver,
-        IChatLlmService llm)
+        IChatLlmService llm,
+        ISystemPromptBuilder promptBuilder)
     {
         _sessions = sessions;
         _messages = messages;
@@ -32,6 +34,7 @@ public class ChatService : IChatService
         _embedder = embedder;
         _scopeResolver = scopeResolver;
         _llm = llm;
+        _promptBuilder = promptBuilder;
     }
 
     public async Task<ChatSessionDto> CreateSessionAsync(CreateChatSessionRequest request)
@@ -71,19 +74,8 @@ public class ChatService : IChatService
             .Where(m => m.Id != userMessage.Id)
             .Select(m => new ChatTurn(m.Role == ChatRole.User ? "user" : "assistant", m.Content));
 
-        // 6. assemble system prompt with retrieved context
-        var contextBlock = chunks.Count == 0
-            ? "(no relevant context found)"
-            : string.Join("\n\n---\n\n", chunks.Select(c => c.ChunkText));
-
-        var systemPrompt =
-            $"""
-             You are a study assistant. Use the following retrieved notes/documents to answer the user's question.
-             If the context doesn't contain the answer, say so rather than guessing.
-
-             Context:
-             {contextBlock}
-             """;
+        // 6. assemble system prompt — guardrails + workspace context (first context) + retrieved chunks
+        var systemPrompt = await _promptBuilder.BuildAsync(session.ScopeId, session.ScopeType, chunks);
 
         // 7. call the LLM
         string reply;

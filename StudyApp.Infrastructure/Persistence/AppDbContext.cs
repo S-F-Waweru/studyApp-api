@@ -20,6 +20,8 @@ public class AppDbContext : DbContext
     public DbSet<ChatSession> ChatSessions => Set<ChatSession>();
     public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
 
+    public DbSet<AiSettings> AiSettings => Set<AiSettings>();
+
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -33,6 +35,8 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(w => w.Id);
             entity.Property(w => w.Name).IsRequired().HasMaxLength(200);
+            entity.Property(w => w.Description).HasMaxLength(2000);
+            entity.Property(w => w.CustomInstructions).HasMaxLength(4000);
 
         });
 
@@ -102,6 +106,19 @@ public class AppDbContext : DbContext
             entity.Property(m => m.Role).HasConversion<string>();
             entity.Property(m => m.RetrievedChunkIds).HasColumnType("uuid[]"); // Postgres array — matches schema §13
             entity.HasIndex(m => m.ChatSessionId);
+        });
+
+        modelBuilder.Entity<AiSettings>(entity =>
+        {
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.ChatProvider).HasConversion<string>();
+            entity.Property(s => s.EmbeddingProvider).HasConversion<string>();
+            entity.Property(s => s.ChatBaseUrl).IsRequired().HasMaxLength(500);
+            entity.Property(s => s.ChatModel).IsRequired().HasMaxLength(200);
+            entity.Property(s => s.ChatApiKey).HasMaxLength(500);
+            entity.Property(s => s.EmbeddingBaseUrl).IsRequired().HasMaxLength(500);
+            entity.Property(s => s.EmbeddingModel).IsRequired().HasMaxLength(200);
+            entity.Property(s => s.EmbeddingApiKey).HasMaxLength(500);
         });
     }
 
