@@ -1,3 +1,56 @@
-﻿[Bb]in/
+# ── build output ──────────────────────────────────────────────
+[Bb]in/
 [Oo]bj/
+artifacts/
+publish/
+
+# ── IDE / editor ──────────────────────────────────────────────
 .idea/
+.vs/
+.vscode/
+*.user
+*.suo
+*.DotSettings.user
+*.sln.docstates
+_ReSharper*/
+
+# ── local runtime data ───────────────────────────────────────
+# uploaded documents, mounted at runtime (see .dockerignore)
+StudyApp.Api/files/
+
+# ── test / coverage output ───────────────────────────────────
+[Tt]est[Rr]esults/
+*.trx
+*.coverage
+coverage*.xml
+coverage*.json
+coverage*.info
+
+# ── local databases ──────────────────────────────────────────
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# ── logs / temp files ────────────────────────────────────────
+*.log
+logs/
+*.tmp
+*.bak
+*.orig
+*.swp
+*~
+~$*
+
+# ── secrets / local environment ──────────────────────────────
+.env
+.env.*
+!.env.example
+secrets.json
+*.pfx
+
+# ── OS junk ──────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini

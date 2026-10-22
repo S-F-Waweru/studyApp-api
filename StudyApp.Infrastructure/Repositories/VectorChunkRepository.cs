@@ -58,36 +58,49 @@ public class VectorChunkRepository : IVectorChunkRepository
     {
         var vector = new Vector(queryEmbedding);
 
-        return await _context.VectorChunks
+        // order over an anonymous projection: EF cannot translate an ORDER BY on a
+        // constructor-bound record property (it inlines new ScoredChunk(...).Distance)
+        var rows = await _context.VectorChunks
+            .AsNoTracking()
             .Where(c =>
                 (c.ScopeType == "workspace" && filter.WorkspaceIds.Contains(c.ScopeId)) ||
                 (c.ScopeType == "folder"    && filter.FolderIds.Contains(c.ScopeId))    ||
                 (c.SourceType == "document" && filter.DocumentIds.Contains(c.SourceId)) ||
                 (c.SourceType == "note"     && filter.NoteIds.Contains(c.SourceId))     ||
                 (c.SourceType == "scribble" && filter.ScribbleIds.Contains(c.SourceId)))
-            .Select(c => new ScoredChunk(c, c.Embedding.CosineDistance(vector)))
+            .Select(c => new { Chunk = c, Distance = c.Embedding.CosineDistance(vector) })
             .OrderBy(x => x.Distance)
             .Take(k)
             .ToListAsync(ct);
+
+        return rows.Select(r => new ScoredChunk(r.Chunk, r.Distance)).ToList();
     }
 
     public async Task<IReadOnlyList<ScoredChunk>> SearchKeywordAsync(string query, RetrievalFilter filter, int k, CancellationToken ct = default)
     {
-        var tsQuery = EF.Functions.WebSearchToTsQuery("english", query);
-
-        return await _context.VectorChunks
+        // the tsquery stays inline: hoisting it into a local makes EF treat it as a
+        // parameter it evaluates client-side, where the DbFunction call cannot run
+        var rows = await _context.VectorChunks
+            .AsNoTracking()
             .Where(c =>
                 ((c.ScopeType == "workspace" && filter.WorkspaceIds.Contains(c.ScopeId)) ||
                  (c.ScopeType == "folder"    && filter.FolderIds.Contains(c.ScopeId))    ||
                  (c.SourceType == "document" && filter.DocumentIds.Contains(c.SourceId)) ||
                  (c.SourceType == "note"     && filter.NoteIds.Contains(c.SourceId))     ||
                  (c.SourceType == "scribble" && filter.ScribbleIds.Contains(c.SourceId)))
-                && EF.Functions.ToTsVector("english", c.ChunkText).Matches(tsQuery))
-            .Select(c => new ScoredChunk(c, EF.Functions.ToTsVector("english", c.ChunkText)
-                                                .Rank(tsQuery) * -1)) // rank descending -> fake distance
+                && EF.Functions.ToTsVector("english", c.ChunkText)
+                    .Matches(EF.Functions.WebSearchToTsQuery("english", query)))
+            .Select(c => new
+            {
+                Chunk = c,
+                Distance = EF.Functions.ToTsVector("english", c.ChunkText)
+                    .Rank(EF.Functions.WebSearchToTsQuery("english", query)) * -1 // rank descending -> fake distance
+            })
             .OrderBy(x => x.Distance)
             .Take(k)
             .ToListAsync(ct);
+
+        return rows.Select(r => new ScoredChunk(r.Chunk, r.Distance)).ToList();
     }
 
     public async Task<IReadOnlyList<VectorChunk>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct = default)
