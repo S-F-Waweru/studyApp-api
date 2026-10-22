@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using System.Text;
 using StudyApp.Application.Embeddings;
 
@@ -112,7 +112,9 @@ public class DocumentChunker : IDocumentChunker
         // included once at the top; harmless and helps the model cite a section name.
         var embedText = string.IsNullOrWhiteSpace(heading) ? text : $"{heading}\n\n{text}";
 
-        var isImage = block.Kind == BlockKind.Image;
+        // Captions carry the same bytes as the figure they describe, so the worker can
+        // persist the image next to its searchable description.
+        var carriesImage = block.Kind is BlockKind.Image or BlockKind.Caption;
 
         return new ChunkSpec(
             Text: text,
@@ -122,8 +124,8 @@ public class DocumentChunker : IDocumentChunker
             Kind: kind,
             ContentHash: Hash(text),
             SourceTitle: null,
-            ImageBytes: isImage ? block.ImageBytes : null,
-            ImageContentType: isImage ? block.ImageContentType : null);
+            ImageBytes: carriesImage ? block.ImageBytes : null,
+            ImageContentType: carriesImage ? block.ImageContentType : null);
     }
 
     private static string Hash(string text) =>

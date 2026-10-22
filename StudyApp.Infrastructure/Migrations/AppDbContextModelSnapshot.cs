@@ -78,6 +78,18 @@ namespace StudyApp.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("VisionApiKey")
+                        .HasColumnType("text");
+
+                    b.Property<string>("VisionBaseUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("VisionModel")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("VisionProvider")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.ToTable("AiSettings");
@@ -105,6 +117,9 @@ namespace StudyApp.Infrastructure.Migrations
 
                     b.Property<string>("Role")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SourcesJson")
                         .HasColumnType("text");
 
                     b.HasKey("Id");

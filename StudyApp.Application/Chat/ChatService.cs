@@ -1,5 +1,7 @@
+using System.Text.Json;
 using StudyApp.Application.Embeddings;
 using StudyApp.Application.Repositories;
+using StudyApp.Application.Retrieval;
 using StudyApp.Application.Scoping;
 using StudyApp.Domain.Entities;
 using StudyApp.Domain.Enums;
@@ -18,6 +20,7 @@ public class ChatService : IChatService
     private readonly IScopeResolver _scopeResolver;
     private readonly IChatLlmService _llm;
     private readonly ISystemPromptBuilder _promptBuilder;
+    private readonly IRetrievalService _retrieval;
 
     public ChatService(
         IChatSessionRepository sessions,
@@ -26,7 +29,8 @@ public class ChatService : IChatService
         IEmbeddingService embedder,
         IScopeResolver scopeResolver,
         IChatLlmService llm,
-        ISystemPromptBuilder promptBuilder)
+        ISystemPromptBuilder promptBuilder,
+        IRetrievalService retrieval)
     {
         _sessions = sessions;
         _messages = messages;
@@ -35,6 +39,7 @@ public class ChatService : IChatService
         _scopeResolver = scopeResolver;
         _llm = llm;
         _promptBuilder = promptBuilder;
+        _retrieval = retrieval;
     }
 
     public async Task<ChatSessionDto> CreateSessionAsync(CreateChatSessionRequest request)
@@ -101,15 +106,14 @@ public class ChatService : IChatService
             throw new ScopeUnavailableException("The selected chat scope no longer contains any material.");
 
         var queryEmbedding = await _embedder.EmbedAsync(request.Content);
-        var chunks = (await _vectorChunks.SearchVectorAsync(queryEmbedding, filter, TopK)).ToList();
+        var retrieval = await _retrieval.RetrieveAsync(request.Content, queryEmbedding, filter);
 
         var recent = await _messages.GetRecentAsync(chatSessionId, HistoryLimit);
         var history = recent
             .Where(m => m.Id != userMessage.Id)
             .Select(m => new ChatTurn(m.Role == ChatRole.User ? "user" : "assistant", m.Content));
 
-        var retrieval = new RetrievalResult(chunks.Select(c => c.Chunk).ToList(), BuildSources(chunks));
-        var systemPrompt = await _promptBuilder.BuildAsync(session.ScopeId, session.ScopeType, retrieval.Chunks);
+        var systemPrompt = await _promptBuilder.BuildAsync(session.ScopeId, session.ScopeType, retrieval);
 
         string reply;
         try { reply = await _llm.GenerateReplyAsync(systemPrompt, history, request.Content); }
@@ -120,7 +124,9 @@ public class ChatService : IChatService
             ChatSessionId = chatSessionId,
             Role = ChatRole.Assistant,
             Content = reply,
-            RetrievedChunkIds = retrieval.Chunks.Select(c => c.Id).ToList()
+            RetrievedChunkIds = retrieval.Chunks.Select(c => c.Id).ToList(),
+            // persisted so citations survive a reload, not just the live response
+            SourcesJson = JsonSerializer.Serialize(retrieval.Sources)
         };
         await _messages.AddAsync(assistantMessage);
 
@@ -150,7 +156,10 @@ public class ChatService : IChatService
     }
 
     private static ChatMessageDto ToDto(ChatMessage m) =>
-        new(m.Id, m.Role.ToString().ToLowerInvariant(), m.Content, m.RetrievedChunkIds, m.CreatedAt);
+        new(m.Id, m.Role.ToString().ToLowerInvariant(), m.Content, m.RetrievedChunkIds, m.CreatedAt,
+            string.IsNullOrWhiteSpace(m.SourcesJson)
+                ? null
+                : JsonSerializer.Deserialize<List<RetrievedSource>>(m.SourcesJson));
 
     private static ChatMessageDto ToDto(ChatMessage m, IReadOnlyList<RetrievedSource> sources) =>
         new(m.Id, m.Role.ToString().ToLowerInvariant(), m.Content, m.RetrievedChunkIds, m.CreatedAt, sources.ToList());

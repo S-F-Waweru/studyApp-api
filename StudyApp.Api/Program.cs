@@ -12,6 +12,7 @@ using StudyApp.Application.Storage;
 using StudyApp.Application.Workspaces;
 using StudyApp.Application.Scoping;
 using StudyApp.Application.Chat;
+using StudyApp.Application.Retrieval;
 using StudyApp.Application.Ai;
 using StudyApp.Infrastructure.Embeddings;
 using StudyApp.Infrastructure.Events;
@@ -104,6 +105,8 @@ builder.Services.AddSingleton<PdfTextExtractor>();
 builder.Services.AddSingleton<OpenXmlTextExtractor>();
 builder.Services.AddSingleton<SpreadsheetTextExtractor>();
 builder.Services.AddSingleton<MarkdownTextExtractor>();
+builder.Services.AddSingleton<ScribbleCanvasExtractor>();
+builder.Services.AddScoped<IImageCaptioner, ImageCaptioner>();
 
 // AI settings — defaults from appsettings "Ai"; once saved via /api/ai/settings the DB row wins
 builder.Services.AddSingleton(builder.Configuration.GetSection("Ai").Get<AiDefaults>() ?? new AiDefaults());
@@ -119,6 +122,8 @@ builder.Services.AddSingleton<IChatProvider, OllamaChatProvider>();
 builder.Services.AddSingleton<IChatProvider, OpenAiCompatibleChatProvider>();
 builder.Services.AddSingleton<IEmbeddingProvider, OllamaEmbeddingProvider>();
 builder.Services.AddSingleton<IEmbeddingProvider, OpenAiCompatibleEmbeddingProvider>();
+builder.Services.AddSingleton<IVisionProvider, OllamaVisionProvider>();
+builder.Services.AddSingleton<IVisionProvider, OpenAiCompatibleVisionProvider>();
 
 // the public seams keep their interfaces — ChatService / EventProcessingWorker etc. don't change
 builder.Services.AddScoped<IEmbeddingService, ConfiguredEmbeddingService>();
@@ -136,6 +141,10 @@ builder.Services.AddScoped<ISystemPromptBuilder, SystemPromptBuilder>();
 builder.Services.AddScoped<IChatLlmService, ConfiguredChatLlmService>();
 builder.Services.AddScoped<ISourceIndexStatusRepository, SourceIndexStatusRepository>();
 builder.Services.AddScoped<StudyApp.Application.Indexing.IIndexReindexService, IndexReindexService>();
+
+// retrieval — hybrid vector + keyword, fused and budgeted before it reaches the prompt
+builder.Services.AddSingleton(builder.Configuration.GetSection("Retrieval").Get<RetrievalOptions>() ?? new RetrievalOptions());
+builder.Services.AddScoped<IRetrievalService, RetrievalService>();
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {

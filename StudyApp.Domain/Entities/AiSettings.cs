@@ -22,6 +22,12 @@ public class AiSettings
     public string EmbeddingModel { get; set; } = default!;
     public string? EmbeddingApiKey { get; set; }
     public int EmbeddingDimensions { get; set; } = EmbeddingDimension;
-    
+
+    // Phase 5 — image captioning. Null VisionModel falls back to ChatModel.
+    public AiProviderType? VisionProvider { get; set; }
+    public string? VisionBaseUrl { get; set; }
+    public string? VisionModel { get; set; }
+    public string? VisionApiKey { get; set; }
+
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

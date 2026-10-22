@@ -27,15 +27,46 @@ public class SystemPromptBuilder : ISystemPromptBuilder
         _defaults = defaults;
     }
 
-    public async Task<string> BuildAsync(Guid scopeId, ScopeType scopeType, IEnumerable<VectorChunk> chunks)
+    public string Build(Workspace? workspace, RetrievalResult retrieval)
+    {
+        var settings = _aiSettings.GetAsync().GetAwaiter().GetResult();
+
+        var retrieved = retrieval.Sources.Count == 0
+            ? "(no relevant context found — say so instead of guessing)"
+            : string.Join("\n\n", retrieval.Sources.Select((source, i) =>
+            {
+                var chunk = retrieval.Chunks[i];
+                var header = $"[{source.Label}] {source.SourceType} \"{source.Title ?? "untitled"}\""
+                           + (source.Locator is null ? "" : $" · {source.Locator}")
+                           + (source.HeadingPath is null ? "" : $" · {source.HeadingPath}");
+                return $"{header}\n{chunk.ChunkText}";
+            }));
+
+        var template = string.IsNullOrWhiteSpace(settings.SystemPromptTemplate)
+            ? _defaults.SystemPromptTemplate
+            : settings.SystemPromptTemplate;
+
+        return template
+            .Replace("{guardrails}", string.IsNullOrWhiteSpace(settings.Guardrails) ? _defaults.Guardrails : settings.Guardrails)
+            .Replace("{workspace_context}", BuildWorkspaceContext(workspace))
+            .Replace("{retrieved_context}", retrieved);
+    }
+
+    public async Task<string> BuildAsync(Guid scopeId, ScopeType scopeType, RetrievalResult retrieval)
     {
         var settings = await _aiSettings.GetAsync();
         var workspace = await ResolveWorkspaceAsync(scopeId, scopeType);
 
-        var chunkList = chunks.ToList();
-        var retrieved = chunkList.Count == 0
-            ? "(no relevant context found)"
-            : string.Join("\n\n---\n\n", chunkList.Select(c => c.ChunkText));
+        var retrieved = retrieval.Sources.Count == 0
+            ? "(no relevant context found — say so instead of guessing)"
+            : string.Join("\n\n", retrieval.Sources.Select((source, i) =>
+            {
+                var chunk = retrieval.Chunks[i];
+                var header = $"[{source.Label}] {source.SourceType} \"{source.Title ?? "untitled"}\""
+                           + (source.Locator is null ? "" : $" · {source.Locator}")
+                           + (source.HeadingPath is null ? "" : $" · {source.HeadingPath}");
+                return $"{header}\n{chunk.ChunkText}";
+            }));
 
         var template = string.IsNullOrWhiteSpace(settings.SystemPromptTemplate)
             ? _defaults.SystemPromptTemplate

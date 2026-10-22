@@ -1,4 +1,4 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using A = DocumentFormat.OpenXml.Drawing;
 using P = DocumentFormat.OpenXml.Presentation;
@@ -59,16 +59,22 @@ public class OpenXmlTextExtractor
         var blocks = new List<ExtractedBlock>();
         var order = 0;
 
-        foreach (var (slide, index) in (doc.PresentationPart?.SlideParts ?? []).Select((s, i) => (s, i + 1)))
+        var slides = (doc.PresentationPart?.SlideParts ?? [])
+            .Select((s, i) => (Root: s.Slide, Index: i + 1))
+            .ToList();
+
+        foreach (var (root, index) in slides)
         {
-            var title = slide.Slide.Descendants<P.TextBody>()
+            if (root is null) continue;
+
+            var title = root.Descendants<P.TextBody>()
                 .SelectMany(t => t.Descendants<A.Paragraph>())
                 .Select(p => string.Concat(p.Descendants<A.Text>().Select(t => t.Text)))
                 .FirstOrDefault(t => !string.IsNullOrWhiteSpace(t)) ?? $"Slide {index}";
 
             blocks.Add(new ExtractedBlock(BlockKind.Heading, title, null, $"slide {index}", order++));
 
-            var body = string.Join("\n", slide.Slide.Descendants<P.TextBody>()
+            var body = string.Join("\n", root.Descendants<P.TextBody>()
                 .SelectMany(t => t.Descendants<A.Paragraph>())
                 .Select(p => string.Concat(p.Descendants<A.Text>().Select(t => t.Text)))
                 .Where(t => !string.IsNullOrWhiteSpace(t) && t != title));
@@ -77,7 +83,7 @@ public class OpenXmlTextExtractor
                 blocks.Add(new ExtractedBlock(BlockKind.Text, body, title, $"slide {index}", order++));
         }
 
-        return new ExtractionResult(blocks, PageCount: blocks.Count);
+        return new ExtractionResult(blocks, PageCount: slides.Count);
     }
 
     private static string? Current(List<(int Level, string Text)> stack) =>
