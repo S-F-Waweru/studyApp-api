@@ -26,6 +26,12 @@ public class DocumentRepository : IDocumentRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task UpdateAsync(Document document)
+    {
+        _context.Documents.Update(document);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task DeleteAsync(Guid id)
     {
         var document = await _context.Documents.FindAsync(id);

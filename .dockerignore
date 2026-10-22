@@ -1,0 +1,20 @@
+# build artifacts
+**/bin
+**/obj
+
+# IDE / VCS
+.git
+.idea
+.vs
+.vscode
+
+# local dev data — mounted into the container at runtime instead of baked into the image
+StudyApp.Api/files
+
+# container tooling itself is not needed inside the image
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# docs
+*.md

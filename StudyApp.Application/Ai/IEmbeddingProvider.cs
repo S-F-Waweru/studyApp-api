@@ -5,5 +5,5 @@ namespace StudyApp.Application.Ai;
 public interface IEmbeddingProvider
 {
     AiProviderType ProviderType { get; }
-    Task<float[]> EmbedAsync(EmbeddingModelConfig config, string text);
+    Task<float[]> EmbedAsync(EmbeddingModelConfig config, string text, CancellationToken ct = default);
 }

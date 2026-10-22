@@ -11,4 +11,6 @@ public interface IFolderRepository
     Task AddAsync(Folder folder);
     Task UpdateAsync(Folder folder);
     Task DeleteAsync(Guid id);
+    
+    Task<IEnumerable<Guid>> GetAncestorIdsAsync(Guid folderId);
 }

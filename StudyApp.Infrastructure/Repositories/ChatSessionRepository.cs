@@ -12,10 +12,16 @@ public class ChatSessionRepository : IChatSessionRepository
 
     public ChatSessionRepository(AppDbContext context) => _context = context;
 
-    public async Task<ChatSession?> GetByIdAsync(Guid id) => await _context.ChatSessions.FindAsync(id);
+    // Targets MUST be loaded: scope resolution runs off this collection on every message.
+    // A bare FindAsync would return an empty set and every send would fail with 409.
+    public async Task<ChatSession?> GetByIdAsync(Guid id) =>
+        await _context.ChatSessions
+            .Include(s => s.Targets)
+            .FirstOrDefaultAsync(s => s.Id == id);
 
     public async Task<IEnumerable<ChatSession>> GetByScopeAsync(Guid scopeId, ScopeType scopeType) =>
         await _context.ChatSessions
+            .Include(s => s.Targets)
             .Where(s => s.ScopeId == scopeId && s.ScopeType == scopeType)
             .OrderByDescending(s => s.CreatedAt)
             .ToListAsync();

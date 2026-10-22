@@ -7,4 +7,5 @@ public class Workspace
     public string? Description { get; set; }
     public string? CustomInstructions { get; set; } // pinned first context for every chat in this workspace
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public Guid? OwnerUserId { get; set; }          // Phase 7 — null until auth lands
 }

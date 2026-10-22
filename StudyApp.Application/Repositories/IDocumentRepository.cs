@@ -8,5 +8,6 @@ public interface IDocumentRepository
     Task<Document?> GetByIdAsync(Guid id);
     Task<IEnumerable<Document>> GetByScopeAsync(Guid scopeId, ScopeType scopeType);
     Task AddAsync(Document document);
+    Task UpdateAsync(Document document);
     Task DeleteAsync(Guid id);
 }

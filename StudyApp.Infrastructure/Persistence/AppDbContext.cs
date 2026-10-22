@@ -21,6 +21,7 @@ public class AppDbContext : DbContext
     public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
 
     public DbSet<AiSettings> AiSettings => Set<AiSettings>();
+    public DbSet<ChatSessionScope> ChatSessionScopes => Set<ChatSessionScope>();
 
 
 
@@ -58,15 +59,6 @@ public class AppDbContext : DbContext
             entity.HasIndex(n => new { n.ScopeId, n.ScopeType }); // every scoped query filters on this pair
         });
 
-        modelBuilder.Entity<Scribble>(entity =>
-        {
-            entity.HasKey(s => s.Id);
-            entity.Property(s => s.Title).IsRequired().HasMaxLength(300);
-            entity.Property(s => s.ScopeType).HasConversion<string>();
-            entity.Property(s => s.CanvasData).HasColumnType("jsonb");
-            entity.HasIndex(s => new { s.ScopeId, s.ScopeType });
-        });
-
         modelBuilder.Entity<NoteScribbleLink>(entity =>
         {
             entity.HasKey(l => new { l.NoteId, l.ScribbleId }); // composite key — pure join table, no surrogate id needed
@@ -78,7 +70,21 @@ public class AppDbContext : DbContext
             entity.HasKey(d => d.Id);
             entity.Property(d => d.Filename).IsRequired().HasMaxLength(300);
             entity.Property(d => d.ScopeType).HasConversion<string>();
+            entity.Property(d => d.ContentType).HasMaxLength(200);
+            entity.Property(d => d.ExtractionError).HasMaxLength(2000);
+            entity.Property(d => d.IndexStatus).HasConversion<string>(); // readable in the DB, safe to reorder
             entity.HasIndex(d => new { d.ScopeId, d.ScopeType });
+        });
+
+        modelBuilder.Entity<Scribble>(entity =>
+        {
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.Title).IsRequired().HasMaxLength(300);
+            entity.Property(s => s.ScopeType).HasConversion<string>();
+            entity.Property(s => s.CanvasData).HasColumnType("jsonb");
+            entity.Property(s => s.ExtractionError).HasMaxLength(2000);
+            entity.Property(s => s.IndexStatus).HasConversion<string>();
+            entity.HasIndex(s => new { s.ScopeId, s.ScopeType });
         });
 
         modelBuilder.Entity<VectorChunk>(entity =>
@@ -86,9 +92,15 @@ public class AppDbContext : DbContext
             entity.HasKey(v => v.Id);
             entity.Property(v => v.SourceType).HasMaxLength(20);
             entity.Property(v => v.ScopeType).HasMaxLength(20);
+            entity.Property(v => v.SourceTitle).HasMaxLength(300);
+            entity.Property(v => v.HeadingPath).HasMaxLength(500);
+            entity.Property(v => v.Locator).HasMaxLength(100);
+            entity.Property(v => v.Kind).HasMaxLength(20);
+            entity.Property(v => v.ContentHash).HasMaxLength(64);
             entity.Property(v => v.Embedding).HasColumnType("vector(768)"); // nomic-embed-text dimension
             entity.HasIndex(v => v.SourceId);
             entity.HasIndex(v => new { v.ScopeId, v.ScopeType });
+            entity.HasIndex(v => v.PipelineVersion);              // reindex job scans on this
         });
 
 
@@ -97,7 +109,19 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(s => s.Id);
             entity.Property(s => s.ScopeType).HasConversion<string>();
+            entity.Property(s => s.Title).HasMaxLength(300);
             entity.HasIndex(s => new { s.ScopeId, s.ScopeType });
+            entity.HasMany(s => s.Targets)
+                  .WithOne()
+                  .HasForeignKey(t => t.ChatSessionId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<ChatSessionScope>(entity =>
+        {
+            entity.HasKey(t => new { t.ChatSessionId, t.TargetType, t.TargetId }); // idempotent targets
+            entity.Property(t => t.TargetType).HasConversion<string>();
+            entity.HasIndex(t => new { t.TargetType, t.TargetId });                // reverse lookup
         });
 
         modelBuilder.Entity<ChatMessage>(entity =>

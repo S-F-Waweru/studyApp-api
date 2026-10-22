@@ -28,6 +28,7 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using StudyApp.Infrastructure.Embeddings.Readers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -83,8 +84,12 @@ builder.Services.AddScoped<IScribbleService, ScribbleService>();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default"), o => o.UseVector()));
 
-// event queue
-builder.Services.AddSingleton(Channel.CreateUnbounded<DomainEvent>());
+// event queue — bounded so a burst of autosaves cannot exhaust memory
+builder.Services.AddSingleton(Channel.CreateBounded<DomainEvent>(new BoundedChannelOptions(10_000)
+{
+    FullMode = BoundedChannelFullMode.DropOldest,
+    SingleReader = true
+}));
 builder.Services.AddSingleton<IEventPublisher, ChannelEventPublisher>();
 builder.Services.AddHostedService<EventProcessingWorker>();
 
@@ -94,6 +99,11 @@ builder.Services.AddSingleton<IFileStorage>(_ =>
 
 // extraction
 builder.Services.AddScoped<ITextExtractor, TextExtractor>();
+builder.Services.AddScoped<IDocumentChunker, DocumentChunker>();
+builder.Services.AddSingleton<PdfTextExtractor>();
+builder.Services.AddSingleton<OpenXmlTextExtractor>();
+builder.Services.AddSingleton<SpreadsheetTextExtractor>();
+builder.Services.AddSingleton<MarkdownTextExtractor>();
 
 // AI settings — defaults from appsettings "Ai"; once saved via /api/ai/settings the DB row wins
 builder.Services.AddSingleton(builder.Configuration.GetSection("Ai").Get<AiDefaults>() ?? new AiDefaults());
@@ -124,6 +134,8 @@ builder.Services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<ISystemPromptBuilder, SystemPromptBuilder>();
 builder.Services.AddScoped<IChatLlmService, ConfiguredChatLlmService>();
+builder.Services.AddScoped<ISourceIndexStatusRepository, SourceIndexStatusRepository>();
+builder.Services.AddScoped<StudyApp.Application.Indexing.IIndexReindexService, IndexReindexService>();
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
@@ -148,6 +160,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+// docker compose sets Db__MigrateOnStartup=true so a fresh database volume is
+// provisioned automatically; local dev keeps migrations manual (dotnet ef ...)
+if (builder.Configuration.GetValue("Db:MigrateOnStartup", false))
+{
+    using var scope = app.Services.CreateScope();
+    await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
+}
 
 app.UseCors("AllowAngular");
 

@@ -16,7 +16,7 @@ public class ConfiguredEmbeddingService : IEmbeddingService
         _providers = providers;
     }
 
-    public async Task<float[]> EmbedAsync(string text)
+    public async Task<float[]> EmbedAsync(string text, CancellationToken ct = default)
     {
         var settings = await _settings.GetAsync();
         var config = settings.ToEmbeddingConfig();
@@ -24,7 +24,7 @@ public class ConfiguredEmbeddingService : IEmbeddingService
         var provider = _providers.FirstOrDefault(p => p.ProviderType == config.Provider)
             ?? throw new InvalidOperationException($"No embedding provider registered for '{config.Provider}'");
 
-        var embedding = await provider.EmbedAsync(config, text);
+        var embedding = await provider.EmbedAsync(config, text, ct);
 
         if (embedding.Length != AiSettings.EmbeddingDimension)
             throw new InvalidOperationException(

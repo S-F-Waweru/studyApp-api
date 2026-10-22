@@ -16,7 +16,11 @@ public class DocumentsController : ApiControllerBase
     public async Task<IActionResult> Upload([FromForm] Guid scopeId, [FromForm] ScopeType scopeType, IFormFile file)
     {
         await using var stream = file.OpenReadStream();
-        var result = await _service.UploadAsync(scopeId, scopeType, file.FileName, stream);
+        var contentType = string.IsNullOrWhiteSpace(file.ContentType)
+            ? "application/octet-stream"
+            : file.ContentType;
+
+        var result = await _service.UploadAsync(scopeId, scopeType, file.FileName, stream, contentType, file.Length);
         return Success(result);
     }
 

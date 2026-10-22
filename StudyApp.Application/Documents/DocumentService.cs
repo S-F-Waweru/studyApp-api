@@ -19,7 +19,8 @@ public class DocumentService : IDocumentService
         _events = events;
     }
 
-    public async Task<DocumentDto> UploadAsync(Guid scopeId, ScopeType scopeType, string filename, Stream content)
+    public async Task<DocumentDto> UploadAsync(Guid scopeId, ScopeType scopeType, string filename, Stream content,
+                                               string contentType, long sizeBytes)
     {
         var id = Guid.NewGuid();
         var storagePath = await _storage.SaveAsync("documents", $"{id}_{filename}", content);
@@ -30,7 +31,10 @@ public class DocumentService : IDocumentService
             ScopeId = scopeId,
             ScopeType = scopeType,
             Filename = filename,
-            StoragePath = storagePath
+            StoragePath = storagePath,
+            ContentType = contentType,
+            SizeBytes = sizeBytes,
+            IndexStatus = IndexStatus.Pending
         };
         await _repository.AddAsync(document);
 
@@ -92,5 +96,33 @@ public class DocumentService : IDocumentService
         return (stream, contentType, document.Filename);
     }
 
-    private static DocumentDto ToDto(Document d) => new(d.Id, d.ScopeId, d.ScopeType, d.Filename, d.CreatedAt);
+    public async Task<DocumentDto?> ReplaceAsync(Guid id, string filename, Stream content, string contentType, long sizeBytes)
+    {
+        var document = await _repository.GetByIdAsync(id);
+        if (document is null) return null;
+
+        await _storage.DeleteAsync(document.StoragePath);
+        document.StoragePath = await _storage.SaveAsync("documents", $"{document.Id}_{filename}", content);
+        document.Filename = filename;
+        document.ContentType = contentType;
+        document.SizeBytes = sizeBytes;
+        document.ContentHash = null;     // force the worker to re-extract
+        document.IndexStatus = IndexStatus.Pending;
+        await _repository.UpdateAsync(document);
+
+        await _events.PublishAsync(new DomainEvent(
+            EventType: DomainEventType.DocumentUpdated,
+            SourceId: document.Id,
+            SourceType: SourceType.Document,
+            ScopeId: document.ScopeId,
+            ScopeType: document.ScopeType.ToString().ToLowerInvariant(),
+            ContentRef: document.StoragePath,
+            Timestamp: DateTime.UtcNow));
+
+        return ToDto(document);
+    }
+
+    private static DocumentDto ToDto(Document d) =>
+        new(d.Id, d.ScopeId, d.ScopeType, d.Filename, d.CreatedAt, d.ContentType,
+            d.IndexStatus, d.ChunkCount, d.PageCount, d.ExtractionError, d.IndexedAt);
 }

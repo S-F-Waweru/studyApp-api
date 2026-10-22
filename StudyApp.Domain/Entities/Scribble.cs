@@ -12,4 +12,13 @@ public class Scribble
     public string? ExtractedText { get; set; }       // filled in later by the extraction worker (Step 6)
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
+    
+    
+    // Phase 0
+    public IndexStatus IndexStatus { get; set; } = IndexStatus.Pending;
+    public string? ExtractionError { get; set; }
+    public DateTime? IndexedAt { get; set; }
+    public int ChunkCount { get; set; }
+    public string? ContentHash { get; set; }            // fingerprint of the normalised canvas content
+
 }

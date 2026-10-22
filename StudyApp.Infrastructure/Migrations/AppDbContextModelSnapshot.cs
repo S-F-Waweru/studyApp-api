@@ -123,6 +123,9 @@ namespace StudyApp.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("ScopeId")
                         .HasColumnType("uuid");
 
@@ -132,7 +135,11 @@ namespace StudyApp.Infrastructure.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -141,19 +148,67 @@ namespace StudyApp.Infrastructure.Migrations
                     b.ToTable("ChatSessions");
                 });
 
+            modelBuilder.Entity("StudyApp.Domain.Entities.ChatSessionScope", b =>
+                {
+                    b.Property<Guid>("ChatSessionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TargetType")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TargetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IncludeAncestors")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IncludeLinked")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("ChatSessionId", "TargetType", "TargetId");
+
+                    b.HasIndex("TargetType", "TargetId");
+
+                    b.ToTable("ChatSessionScopes");
+                });
+
             modelBuilder.Entity("StudyApp.Domain.Entities.Document", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<int>("ChunkCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ContentHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ContentType")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ExtractionError")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<string>("Filename")
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
+
+                    b.Property<string>("IndexStatus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("IndexedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("PageCount")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("ScopeId")
                         .HasColumnType("uuid");
@@ -161,6 +216,9 @@ namespace StudyApp.Infrastructure.Migrations
                     b.Property<string>("ScopeType")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<long>("SizeBytes")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("StoragePath")
                         .IsRequired()
@@ -258,11 +316,28 @@ namespace StudyApp.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("jsonb");
 
+                    b.Property<int>("ChunkCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ContentHash")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ExtractedText")
                         .HasColumnType("text");
+
+                    b.Property<string>("ExtractionError")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("IndexStatus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("IndexedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("ScopeId")
                         .HasColumnType("uuid");
@@ -292,9 +367,17 @@ namespace StudyApp.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<int>("ChunkIndex")
+                        .HasColumnType("integer");
+
                     b.Property<string>("ChunkText")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("ContentHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -302,6 +385,25 @@ namespace StudyApp.Infrastructure.Migrations
                     b.Property<Vector>("Embedding")
                         .IsRequired()
                         .HasColumnType("vector(768)");
+
+                    b.Property<string>("HeadingPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Locator")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("PipelineVersion")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("ScopeId")
                         .HasColumnType("uuid");
@@ -314,12 +416,21 @@ namespace StudyApp.Infrastructure.Migrations
                     b.Property<Guid>("SourceId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("SourceTitle")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
                     b.Property<string>("SourceType")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
+                    b.Property<int>("TokenCount")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PipelineVersion");
 
                     b.HasIndex("SourceId");
 
@@ -350,9 +461,21 @@ namespace StudyApp.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<Guid?>("OwnerUserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.ToTable("Workspaces");
+                });
+
+            modelBuilder.Entity("StudyApp.Domain.Entities.ChatSessionScope", b =>
+                {
+                    b.HasOne("StudyApp.Domain.Entities.ChatSession", null)
+                        .WithMany("Targets")
+                        .HasForeignKey("ChatSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("StudyApp.Domain.Entities.Folder", b =>
@@ -361,6 +484,11 @@ namespace StudyApp.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("ParentFolderId")
                         .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("StudyApp.Domain.Entities.ChatSession", b =>
+                {
+                    b.Navigation("Targets");
                 });
 #pragma warning restore 612, 618
         }

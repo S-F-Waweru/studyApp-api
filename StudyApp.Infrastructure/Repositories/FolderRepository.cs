@@ -117,4 +117,33 @@ public class FolderRepository : IFolderRepository
         return ids;
     }
 
+    
+    // FolderRepository addition
+public async Task<IEnumerable<Guid>> GetAncestorIdsAsync(Guid folderId)
+{
+    const string sql = """
+        WITH RECURSIVE ancestors AS (
+            SELECT "Id", "ParentFolderId" FROM "Folders" WHERE "Id" = @folderId
+            UNION ALL
+            SELECT f."Id", f."ParentFolderId" FROM "Folders" f
+            INNER JOIN ancestors a ON f."Id" = a."ParentFolderId"
+        )
+        SELECT "Id" FROM ancestors;
+        """;
+
+    var connection = _context.Database.GetDbConnection();
+    if (connection.State != System.Data.ConnectionState.Open) await connection.OpenAsync();
+
+    await using var command = connection.CreateCommand();
+    command.CommandText = sql;
+    var param = command.CreateParameter();
+    param.ParameterName = "@folderId";
+    param.Value = folderId;
+    command.Parameters.Add(param);
+
+    var ids = new List<Guid>();
+    await using var reader = await command.ExecuteReaderAsync();
+    while (await reader.ReadAsync()) ids.Add(reader.GetGuid(0));
+    return ids;
+}
 }

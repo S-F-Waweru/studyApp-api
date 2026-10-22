@@ -14,7 +14,7 @@ public class OpenAiCompatibleEmbeddingProvider : IEmbeddingProvider
 
     public AiProviderType ProviderType => AiProviderType.OpenAiCompatible;
 
-    public async Task<float[]> EmbedAsync(EmbeddingModelConfig config, string text)
+    public async Task<float[]> EmbedAsync(EmbeddingModelConfig config, string text, CancellationToken ct = default)
     {
         try
         {
@@ -26,10 +26,10 @@ public class OpenAiCompatibleEmbeddingProvider : IEmbeddingProvider
             if (!string.IsNullOrEmpty(config.ApiKey))
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", config.ApiKey);
 
-            using var response = await client.SendAsync(request);
+            using var response = await client.SendAsync(request, ct);
             response.EnsureSuccessStatusCode();
 
-            var result = await response.Content.ReadFromJsonAsync<OpenAiEmbeddingResponse>();
+            var result = await response.Content.ReadFromJsonAsync<OpenAiEmbeddingResponse>(ct);
             return result?.Data.FirstOrDefault()?.Embedding
                 ?? throw new InvalidOperationException("Empty embedding response from the OpenAI-compatible endpoint");
         }

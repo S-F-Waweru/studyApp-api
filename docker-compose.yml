@@ -1,0 +1,69 @@
+name: studyapp
+
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    container_name: studyapp-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: studyapp
+    ports:
+      # host port matches the appsettings connection string (localhost:5433) so
+      # `dotnet ef` / psql from the host keep working unchanged
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # TCP check — the postgres entrypoint's init-phase server only listens on a unix socket,
+      # so this only goes green once the real server (and any init work) is ready
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -p 5432 -U postgres -d studyapp"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: studyapp-api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Default: "Host=db;Port=5432;Database=studyapp;Username=postgres;Password=postgres"
+      # AI defaults point at Ollama running on the HOST (host.docker.internal reaches it from the container).
+      # These only seed the first read — after that the AiSettings row (editable via /api/ai/settings) wins.
+      Ai__ChatBaseUrl: "http://host.docker.internal:11434"
+      Ai__EmbeddingBaseUrl: "http://host.docker.internal:11434"
+      # SigNoz / OTLP collector on the host — exports fail softly if it is not running
+      Otel__Endpoint: "http://host.docker.internal:4317"
+      # apply EF migrations on boot so a fresh database volume is provisioned automatically
+      Db__MigrateOnStartup: "true"
+    extra_hosts:
+      # makes host.docker.internal resolvable on Linux as well (it is built into Docker Desktop)
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "5031:8080"
+    volumes:
+      # uploaded documents land here — same folder the API uses when run locally
+      - ./StudyApp.Api/files:/app/files
+
+  # optional: run Ollama inside Docker instead of on the host:
+  #   docker compose --profile ollama up -d
+  # then set Chat/Embedding base URLs to http://ollama:11434 in the AI settings UI,
+  # or add Ai__ChatBaseUrl/Ai__EmbeddingBaseUrl overrides pointing at ollama
+  ollama:
+    image: ollama/ollama:latest
+    container_name: studyapp-ollama
+    profiles: ["ollama"]
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+
+volumes:
+  pgdata:
+  ollama:

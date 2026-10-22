@@ -1,12 +1,18 @@
 {
   "version": 2,
-  "dgSpecHash": "Tfp+4DB6kZE=",
+  "dgSpecHash": "PXJAarblAxI=",
   "success": true,
   "projectFilePath": "C:\\Code\\Full Projects\\StudyApp\\studyApp-api\\StudyApp.Api\\StudyApp.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\N.Waweru\\.nuget\\packages\\aspnetcore.healthchecks.npgsql\\9.0.0\\aspnetcore.healthchecks.npgsql.9.0.0.nupkg.sha512",
     "C:\\Users\\N.Waweru\\.nuget\\packages\\aspnetcore.healthchecks.uris\\9.0.0\\aspnetcore.healthchecks.uris.9.0.0.nupkg.sha512",
+    "C:\\Users\\N.Waweru\\.nuget\\packages\\closedxml\\0.105.1\\closedxml.0.105.1.nupkg.sha512",
+    "C:\\Users\\N.Waweru\\.nuget\\packages\\closedxml.parser\\2.0.0\\closedxml.parser.2.0.0.nupkg.sha512",
+    "C:\\Users\\N.Waweru\\.nuget\\packages\\documentformat.openxml\\3.5.1\\documentformat.openxml.3.5.1.nupkg.sha512",
+    "C:\\Users\\N.Waweru\\.nuget\\packages\\documentformat.openxml.framework\\3.5.1\\documentformat.openxml.framework.3.5.1.nupkg.sha512",
+    "C:\\Users\\N.Waweru\\.nuget\\packages\\excelnumberformat\\1.1.0\\excelnumberformat.1.1.0.nupkg.sha512",
     "C:\\Users\\N.Waweru\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
+    "C:\\Users\\N.Waweru\\.nuget\\packages\\markdig\\1.4.2\\markdig.1.4.2.nupkg.sha512",
     "C:\\Users\\N.Waweru\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.11\\microsoft.aspnetcore.openapi.10.0.11.nupkg.sha512",
     "C:\\Users\\N.Waweru\\.nuget\\packages\\microsoft.build.framework\\18.0.2\\microsoft.build.framework.18.0.2.nupkg.sha512",
     "C:\\Users\\N.Waweru\\.nuget\\packages\\microsoft.codeanalysis.analyzers\\3.11.0\\microsoft.codeanalysis.analyzers.3.11.0.nupkg.sha512",
@@ -37,16 +43,20 @@
     "C:\\Users\\N.Waweru\\.nuget\\packages\\opentelemetry.instrumentation.entityframeworkcore\\1.18.0-beta.1\\opentelemetry.instrumentation.entityframeworkcore.1.18.0-beta.1.nupkg.sha512",
     "C:\\Users\\N.Waweru\\.nuget\\packages\\opentelemetry.instrumentation.http\\1.18.0\\opentelemetry.instrumentation.http.1.18.0.nupkg.sha512",
     "C:\\Users\\N.Waweru\\.nuget\\packages\\opentelemetry.instrumentation.runtime\\1.18.0\\opentelemetry.instrumentation.runtime.1.18.0.nupkg.sha512",
+    "C:\\Users\\N.Waweru\\.nuget\\packages\\pdfpig\\0.1.16\\pdfpig.0.1.16.nupkg.sha512",
     "C:\\Users\\N.Waweru\\.nuget\\packages\\pgvector\\0.3.2\\pgvector.0.3.2.nupkg.sha512",
     "C:\\Users\\N.Waweru\\.nuget\\packages\\pgvector.entityframeworkcore\\0.3.0\\pgvector.entityframeworkcore.0.3.0.nupkg.sha512",
+    "C:\\Users\\N.Waweru\\.nuget\\packages\\rbush.signed\\4.0.0\\rbush.signed.4.0.0.nupkg.sha512",
     "C:\\Users\\N.Waweru\\.nuget\\packages\\scalar.aspnetcore\\2.16.20\\scalar.aspnetcore.2.16.20.nupkg.sha512",
+    "C:\\Users\\N.Waweru\\.nuget\\packages\\sixlabors.fonts\\1.0.0\\sixlabors.fonts.1.0.0.nupkg.sha512",
     "C:\\Users\\N.Waweru\\.nuget\\packages\\system.codedom\\6.0.0\\system.codedom.6.0.0.nupkg.sha512",
     "C:\\Users\\N.Waweru\\.nuget\\packages\\system.composition\\9.0.0\\system.composition.9.0.0.nupkg.sha512",
     "C:\\Users\\N.Waweru\\.nuget\\packages\\system.composition.attributedmodel\\9.0.0\\system.composition.attributedmodel.9.0.0.nupkg.sha512",
     "C:\\Users\\N.Waweru\\.nuget\\packages\\system.composition.convention\\9.0.0\\system.composition.convention.9.0.0.nupkg.sha512",
     "C:\\Users\\N.Waweru\\.nuget\\packages\\system.composition.hosting\\9.0.0\\system.composition.hosting.9.0.0.nupkg.sha512",
     "C:\\Users\\N.Waweru\\.nuget\\packages\\system.composition.runtime\\9.0.0\\system.composition.runtime.9.0.0.nupkg.sha512",
-    "C:\\Users\\N.Waweru\\.nuget\\packages\\system.composition.typedparts\\9.0.0\\system.composition.typedparts.9.0.0.nupkg.sha512"
+    "C:\\Users\\N.Waweru\\.nuget\\packages\\system.composition.typedparts\\9.0.0\\system.composition.typedparts.9.0.0.nupkg.sha512",
+    "C:\\Users\\N.Waweru\\.nuget\\packages\\system.io.packaging\\10.0.2\\system.io.packaging.10.0.2.nupkg.sha512"
   ],
   "logs": []
 }
