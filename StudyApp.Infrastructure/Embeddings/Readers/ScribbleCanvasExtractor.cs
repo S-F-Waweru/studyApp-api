@@ -29,7 +29,7 @@ public class ScribbleCanvasExtractor
             {
                 foreach (var element in elements.EnumerateArray())
                 {
-                    // deleted elements must never be indexed
+                    // deleted elements must never be indexedpa
                     if (element.TryGetProperty("isDeleted", out var deleted) && deleted.ValueKind == JsonValueKind.True)
                         continue;
 
