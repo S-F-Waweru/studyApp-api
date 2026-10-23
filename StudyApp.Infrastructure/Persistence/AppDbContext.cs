@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using StudyApp.Domain.Entities;
+using StudyApp.Infrastructure.Identity;
 
 
 namespace StudyApp.Infrastructure.Persistence;
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -25,13 +28,15 @@ public class AppDbContext : DbContext
 
 
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        // enables the Vector type mapping — required alongside the UseNpgsql(...).UseVector() call in Program.cs
-    }
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // {
+    //     // enables the Vector type mapping — required alongside the UseNpgsql(...).UseVector() call in Program.cs
+    // }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+        
         modelBuilder.Entity<Workspace>(entity =>
         {
             entity.HasKey(w => w.Id);

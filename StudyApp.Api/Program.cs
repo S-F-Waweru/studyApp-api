@@ -22,14 +22,24 @@ using StudyApp.Infrastructure.Storage;
 using StudyApp.Infrastructure.Ai;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Npgsql;
 using StudyApp.Application.Common;
+
+using System.Security.Cryptography;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using StudyApp.Application.Auth;
+using StudyApp.Infrastructure.Identity;
 
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using StudyApp.Infrastructure.Embeddings.Readers;
+using StudyApp.Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,10 +90,70 @@ builder.Services.AddScoped<INoteService, NoteService>();
 builder.Services.AddScoped<IScribbleRepository, ScribbleRepository>();
 builder.Services.AddScoped<INoteScribbleLinkRepository, NoteScribbleLinkRepository>();
 builder.Services.AddScoped<IScribbleService, ScribbleService>();
+//app-settings configurations
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<JwtOptions>>().Value);
+
 
 // Postgres + pgvector — matches "Default" from appsettings.json
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default"), o => o.UseVector()));
+
+// ── Phase 7.1 — identity ────────────────────────────────────────────────
+// the key is resolved once, before anything reads it: issuer and validator must
+// provably share the same bytes, and a missing key must fail loudly at startup
+var jwt = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>() ?? new JwtOptions();
+
+if (string.IsNullOrWhiteSpace(jwt.SigningKey))
+{
+    if (!builder.Environment.IsDevelopment())
+        throw new InvalidOperationException(
+            "Jwt:SigningKey is required outside Development. Set Jwt__SigningKey or use user-secrets.");
+
+    // ephemeral by design: every restart invalidates old tokens, which is exactly
+    // what you want on a dev box and exactly what you don't want in production
+    jwt.SigningKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(48));
+    Console.WriteLine("JWT: no Jwt:SigningKey configured — generated an ephemeral development key.");
+}
+
+builder.Services.AddSingleton(jwt);
+
+builder.Services.AddIdentityCore<AppUser>(options =>
+    {
+        options.User.RequireUniqueEmail = true;
+        options.Password.RequiredLength = 10;
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Lockout.AllowedForNewUsers = true;
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+    })
+    .AddRoles<IdentityRole<Guid>>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.MapInboundClaims = false; // keep "sub" as "sub" — the default remap is a classic trap
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = jwt.Issuer,
+            ValidateAudience = true,
+            ValidAudience = jwt.Audience,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey)),
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddAuthorization();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // event queue — bounded so a burst of autosaves cannot exhaust memory
 builder.Services.AddSingleton(Channel.CreateBounded<DomainEvent>(new BoundedChannelOptions(10_000)
@@ -179,6 +249,11 @@ if (builder.Configuration.GetValue("Db:MigrateOnStartup", false))
 }
 
 app.UseCors("AllowAngular");
+
+// authentication populates HttpContext.User from the bearer token;
+// authorization then decides whether that user may proceed. This order is fixed.
+app.UseAuthentication();
+app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
