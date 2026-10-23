@@ -1,11 +1,13 @@
-@StudyApp.Api_HostAddress = http://localhost:5031
+@host = http://localhost:5031
+@email = learner@example.com
+@password = StudyApp2026!
 
 ### Get current AI settings (API keys are masked, never returned raw)
-GET {{StudyApp.Api_HostAddress}}/api/ai/settings
+GET {{host}}/api/ai/settings
 Accept: application/json
 
 ### Update AI settings — BYOK + guardrails example
-PUT {{StudyApp.Api_HostAddress}}/api/ai/settings
+PUT {{host}}/api/ai/settings
 Content-Type: application/json
 
 {
@@ -22,7 +24,7 @@ Content-Type: application/json
 }
 
 ### Set the workspace first-context (pinned into every chat in this workspace)
-PUT {{StudyApp.Api_HostAddress}}/api/workspaces/00000000-0000-0000-0000-000000000000
+PUT {{host}}/api/workspaces/00000000-0000-0000-0000-000000000000
 Content-Type: application/json
 
 {
@@ -32,7 +34,57 @@ Content-Type: application/json
 }
 
 ### Test the saved (or supplied) configuration — lists models and checks embedding dimensions
-POST {{StudyApp.Api_HostAddress}}/api/ai/test
+POST {{host}}/api/ai/test
 Content-Type: application/json
 
 {}
+
+
+
+
+### 1. register — expect 201, note the refreshToken
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{ "email": "{{email}}", "password": "{{password}}", "displayName": "Learner" }
+
+### 2. login — expect 200, note the refreshToken
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "{{email}}", "password": "{{password}}" }
+
+### 3. refresh — expect 200 and a DIFFERENT refreshToken
+# paste the token from step 2 into --> refresh below
+@refresh = xWRnm6MrbMtWBRRL4YCv7CMyBiwLo6MKZ342CDY00F4
+POST {{host}}/api/auth/refresh
+Content-Type: application/json
+
+{ "refreshToken": "{{refresh}}" }
+
+### 4. replay the OLD token — expect 401
+# this also revokes the token from step 3, which is the point
+POST {{host}}/api/auth/refresh
+Content-Type: application/json
+
+{ "refreshToken": "{{refresh}}" }
+
+### 5. the token from step 3 must now also fail — expect 401
+# paste it over ==> afterReplay to prove the family was revoked
+@afterReplay = PASTE_TOKEN_FROM_STEP_3
+POST {{host}}/api/auth/refresh
+Content-Type: application/json
+
+{ "refreshToken": "{{afterReplay}}" }
+
+### 6. me — expect 200, id matches the token's sub
+# paste accessToken from step 2
+@access = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0YmU5ZmJmZi1mZGI2LTRkZTItYTJhNC0wMzczMjQ3MjA3ZDUiLCJlbWFpbCI6ImxlYXJuZXJAZXhhbXBsZS5jb20iLCJqdGkiOiI1MTAyMDQwNC05MzA0LTQ2MTAtYjdjYy00NGIxNjFiMTUzN2QiLCJuYmYiOjE3OTI3NTIzMzgsImV4cCI6MTc5Mjc1MzIzOCwiaXNzIjoic3R1ZHlhcHAtYXBpIiwiYXVkIjoic3R1ZHlhcHAtYW5ndWxhciJ9.e99NxriePE_RkSEbWOk-ly3NF9UvF7-wKy5GyYyMzeg
+GET {{host}}/api/auth/me
+Authorization: Bearer {{access}}
+
+### 7. rate limit — run this 11 times, the 11th must be 429
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "{{email}}", "password": "wrong-password" }

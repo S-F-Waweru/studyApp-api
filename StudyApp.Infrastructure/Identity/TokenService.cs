@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using StudyApp.Application.Auth;
@@ -45,4 +46,20 @@ public class TokenService: ITokenService
         );
         return (new JwtSecurityTokenHandler().WriteToken(token), expires);
     }
+    
+    
+    public string CreateRefreshToken()
+    {
+        // 256 bits of entropy, URL-safe: this string travels through JSON bodies,
+        // and one day through headers or query strings, without re-encoding
+        var bytes = RandomNumberGenerator.GetBytes(32);
+
+        return Convert.ToBase64String(bytes)
+            .Replace('+', '-')
+            .Replace('/', '_')
+            .TrimEnd('=');
+    }
+
+    public string HashRefreshToken(string refreshToken) =>
+        Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(refreshToken)));
 }

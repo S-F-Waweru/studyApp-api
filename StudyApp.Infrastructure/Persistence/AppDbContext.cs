@@ -25,6 +25,8 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
 
     public DbSet<AiSettings> AiSettings => Set<AiSettings>();
     public DbSet<ChatSessionScope> ChatSessionScopes => Set<ChatSessionScope>();
+    
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
 
 
@@ -149,6 +151,22 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
             entity.Property(s => s.EmbeddingModel).IsRequired().HasMaxLength(200);
             entity.Property(s => s.EmbeddingApiKey).HasMaxLength(500);
         });
+
+
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(t => t.Id);
+            entity.Property(t => t.TokenHash).IsRequired().HasMaxLength(64); // SHA-256 as uppercase hex
+            entity.Property(t => t.RevocationReason).HasMaxLength(50);
+
+            // unique: a hash collision would let one token authenticate as another
+            entity.HasIndex(t => t.TokenHash).IsUnique();
+
+            // every refresh lookup is by hash, but revocation is by family or by user
+            entity.HasIndex(t => new { t.UserId, t.FamilyId });
+        });
     }
+    
+    
 
 }

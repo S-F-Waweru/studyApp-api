@@ -1,3 +1,6 @@
+# LOCAL DEVELOPMENT ONLY. Development mode exposes /scalar, leaks stack traces
+# and auto-migrates on boot — none of that belongs in production.
+
 name: studyapp
 
 services:
@@ -42,6 +45,13 @@ services:
       Otel__Endpoint: "http://host.docker.internal:4317"
       # apply EF migrations on boot so a fresh database volume is provisioned automatically
       Db__MigrateOnStartup: "true"
+        # signs access tokens. Without this the API generates a random key on every
+        # container start, so each rebuild silently invalidates every access token.
+        # Provide the real value via JWT_SIGNING_KEY in a git-ignored .env file;
+        # the fallback below exists only so local dev boots without setup.
+      Jwt__SigningKey: ${JWT_SIGNING_KEY:-dev-only-signing-key-change-me-please-0001}
+        # port publishing hides the real client IP, so this bucket is shared by everyone
+      RateLimit__LoginPerMinute: "60"
     extra_hosts:
       # makes host.docker.internal resolvable on Linux as well (it is built into Docker Desktop)
       - "host.docker.internal:host-gateway"

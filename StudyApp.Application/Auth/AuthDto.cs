@@ -10,4 +10,13 @@ namespace StudyApp.Application.Auth;
     
     public record UserDto(Guid Id, string Email, string? DisplayName);
     
-    public record AuthTokenDto(String AccessToken, DateTime ExpiresAtUtc, UserDto User);
+    public record RefreshRequest(String RefreshToken);
+
+    public record LogoutRequest(String RefreshToken);
+
+    public record AuthTokenDto(
+        String AccessToken,
+        DateTime ExpiresAtUtc,
+        String RefreshToken,
+        DateTime RefreshTokenExpiresAtUtc,
+        UserDto User);

@@ -1,6 +1,7 @@
 ﻿// StudyApp.Api/Controllers/AuthController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using StudyApp.Application.Auth;
 
 namespace StudyApp.Api.Controllers;
@@ -30,6 +31,7 @@ public class AuthController : ApiControllerBase
     }
 
     [AllowAnonymous]
+    [EnableRateLimiting("login")]
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginRequest request)
     {
@@ -60,6 +62,40 @@ public class AuthController : ApiControllerBase
             ? Success<object?>(null, 204)
             : Fail(400, "Current password is incorrect or the new password is not allowed.");
     }
+    
+    [AllowAnonymous]
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh(RefreshRequest request)
+    {
+        var result = await _auth.RefreshAsync(request);
+        return result is null
+            ? Fail(401, "Refresh token is invalid, expired or already used.")
+            : Success(result);
+    }
+
+    // anonymous on purpose: an expired access token must not stop a client from
+    // logging out, and the refresh token itself is the proof of ownership
+    [AllowAnonymous]
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(LogoutRequest request)
+    {
+        await _auth.LogoutAsync(request);
+        return Success<object?>(null, 204);
+    }
+
+    [Authorize]
+    [HttpPost("logout-all")]
+    public async Task<IActionResult> LogoutAll()
+    {
+        if (CurrentUserId() is not { } userId)
+            return Fail(401, "Invalid token subject.");
+
+        await _auth.LogoutAllAsync(userId);
+        return Success<object?>(null, 204);
+    }
+    
+    
+    
 
     private Guid? CurrentUserId() =>
         Guid.TryParse(User.FindFirst(SubjectClaim)?.Value, out var id) ? id : null;

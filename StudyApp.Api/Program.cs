@@ -28,6 +28,7 @@ using StudyApp.Application.Common;
 
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -151,9 +152,35 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+// login throttling runs on two independent counters: this one limits per-IP
+// throughput, while AuthService's lockout limits per-account guessing
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests; // the default is 503
+
+    options.AddPolicy("login", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = builder.Configuration.GetValue("RateLimit:LoginPerMinute", 10),
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
+
+    // keep the ApiResponse envelope, otherwise the Angular interceptor cannot parse a 429
+    options.OnRejected = async (context, ct) =>
+    {
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        await context.HttpContext.Response.WriteAsJsonAsync(
+            ApiResponse<object>.Fail(429, "Too many attempts. Try again in a minute."), ct);
+    };
+});
+
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
 // event queue — bounded so a burst of autosaves cannot exhaust memory
 builder.Services.AddSingleton(Channel.CreateBounded<DomainEvent>(new BoundedChannelOptions(10_000)
@@ -254,6 +281,10 @@ app.UseCors("AllowAngular");
 // authorization then decides whether that user may proceed. This order is fixed.
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
+
+
+
 
 if (app.Environment.IsDevelopment())
 {
