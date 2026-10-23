@@ -268,7 +268,7 @@ namespace StudyApp.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("CreatedByUserId")
+                    b.Property<Guid?>("OwnerUserId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("ScopeId")
@@ -287,6 +287,8 @@ namespace StudyApp.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OwnerUserId");
 
                     b.HasIndex("ScopeId", "ScopeType");
 
@@ -352,6 +354,9 @@ namespace StudyApp.Infrastructure.Migrations
                     b.Property<DateTime?>("IndexedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("OwnerUserId")
+                        .HasColumnType("uuid");
+
                     b.Property<int?>("PageCount")
                         .HasColumnType("integer");
 
@@ -371,7 +376,7 @@ namespace StudyApp.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ScopeId", "ScopeType");
+                    b.HasIndex("OwnerUserId", "ScopeId", "ScopeType");
 
                     b.ToTable("Documents");
                 });
@@ -416,6 +421,9 @@ namespace StudyApp.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("OwnerUserId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("ScopeId")
                         .HasColumnType("uuid");
 
@@ -433,7 +441,7 @@ namespace StudyApp.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ScopeId", "ScopeType");
+                    b.HasIndex("OwnerUserId", "ScopeId", "ScopeType");
 
                     b.ToTable("Notes");
                 });
@@ -527,6 +535,9 @@ namespace StudyApp.Infrastructure.Migrations
                     b.Property<DateTime?>("IndexedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("OwnerUserId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("ScopeId")
                         .HasColumnType("uuid");
 
@@ -544,7 +555,7 @@ namespace StudyApp.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ScopeId", "ScopeType");
+                    b.HasIndex("OwnerUserId", "ScopeId", "ScopeType");
 
                     b.ToTable("Scribbles");
                 });
@@ -653,6 +664,8 @@ namespace StudyApp.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OwnerUserId");
 
                     b.ToTable("Workspaces");
                 });
@@ -780,6 +793,14 @@ namespace StudyApp.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("StudyApp.Domain.Entities.ChatSession", b =>
+                {
+                    b.HasOne("StudyApp.Infrastructure.Identity.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("OwnerUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("StudyApp.Domain.Entities.ChatSessionScope", b =>
                 {
                     b.HasOne("StudyApp.Domain.Entities.ChatSession", null)
@@ -789,11 +810,43 @@ namespace StudyApp.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("StudyApp.Domain.Entities.Document", b =>
+                {
+                    b.HasOne("StudyApp.Infrastructure.Identity.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("OwnerUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("StudyApp.Domain.Entities.Folder", b =>
                 {
                     b.HasOne("StudyApp.Domain.Entities.Folder", null)
                         .WithMany()
                         .HasForeignKey("ParentFolderId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("StudyApp.Domain.Entities.Note", b =>
+                {
+                    b.HasOne("StudyApp.Infrastructure.Identity.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("OwnerUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("StudyApp.Domain.Entities.Scribble", b =>
+                {
+                    b.HasOne("StudyApp.Infrastructure.Identity.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("OwnerUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("StudyApp.Domain.Entities.Workspace", b =>
+                {
+                    b.HasOne("StudyApp.Infrastructure.Identity.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("OwnerUserId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

@@ -45,7 +45,11 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
             entity.Property(w => w.Name).IsRequired().HasMaxLength(200);
             entity.Property(w => w.Description).HasMaxLength(2000);
             entity.Property(w => w.CustomInstructions).HasMaxLength(4000);
-
+            entity.HasIndex(w => w.OwnerUserId);
+            entity.HasOne<AppUser>()
+                    .WithMany()
+                    .HasForeignKey(w => w.OwnerUserId)
+                    .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Folder>(entity =>
@@ -63,7 +67,11 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
             entity.HasKey(n => n.Id);
             entity.Property(n => n.Title).IsRequired().HasMaxLength(300);
             entity.Property(n => n.ScopeType).HasConversion<string>(); // stored as text, not int — readable in the DB, safe to reorder enum values later
-            entity.HasIndex(n => new { n.ScopeId, n.ScopeType }); // every scoped query filters on this pair
+            entity.HasIndex(n => new { n.OwnerUserId, n.ScopeId, n.ScopeType }); // owner-first: every scoped query carries the owner filter
+            entity.HasOne<AppUser>()
+                  .WithMany()
+                  .HasForeignKey(n => n.OwnerUserId)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<NoteScribbleLink>(entity =>
@@ -80,7 +88,11 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
             entity.Property(d => d.ContentType).HasMaxLength(200);
             entity.Property(d => d.ExtractionError).HasMaxLength(2000);
             entity.Property(d => d.IndexStatus).HasConversion<string>(); // readable in the DB, safe to reorder
-            entity.HasIndex(d => new { d.ScopeId, d.ScopeType });
+            entity.HasIndex(d => new { d.OwnerUserId, d.ScopeId, d.ScopeType });
+            entity.HasOne<AppUser>()
+                  .WithMany()
+                  .HasForeignKey(d => d.OwnerUserId)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Scribble>(entity =>
@@ -91,7 +103,11 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
             entity.Property(s => s.CanvasData).HasColumnType("jsonb");
             entity.Property(s => s.ExtractionError).HasMaxLength(2000);
             entity.Property(s => s.IndexStatus).HasConversion<string>();
-            entity.HasIndex(s => new { s.ScopeId, s.ScopeType });
+            entity.HasIndex(s => new { s.OwnerUserId, s.ScopeId, s.ScopeType });
+            entity.HasOne<AppUser>()
+                  .WithMany()
+                  .HasForeignKey(s => s.OwnerUserId)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<VectorChunk>(entity =>
@@ -122,6 +138,10 @@ public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
                   .WithOne()
                   .HasForeignKey(t => t.ChatSessionId)
                   .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne<AppUser>()
+                  .WithMany()
+                  .HasForeignKey(n => n.OwnerUserId)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<ChatSessionScope>(entity =>
